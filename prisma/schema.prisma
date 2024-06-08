@@ -5,13 +5,13 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -24,11 +24,11 @@ model User {
   accounts      Account[]
   sessions      Session[]
   Authenticator Authenticator[]
-  auctions Auction[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  auctions      Auction[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -41,28 +41,30 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@id([provider, providerAccountId])
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
+
   @@id([identifier, token])
 }
- 
+
 // Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique
@@ -73,30 +75,58 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@id([userId, credentialID])
 }
+
 model Bid {
   id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 model Lot {
+  id          String      @id @default(cuid())
+  name        String
+  startingBid Float
+  file        String
+  categoryId  String
+  category    LotCategory @relation(fields: [categoryId], references: [id])
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model LotCategory {
   id        String   @id @default(cuid())
   name      String
-  startingBid     Float
-  file      String
-  auctionId String
-  auction   Auction  @relation(fields: [auctionId], references: [id])
+  lots      Lot[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Auction {
-  id        String   @id @default(cuid())
-  name      String
-  file      String
-  userId    String
-  location  String
-  startDate DateTime
-  endDate   DateTime
-  user      User     @relation(fields: [userId], references: [id])
-  lots      Lot[]
+  id         String   @id @default(cuid())
+  name       String
+  file       String
+  userId     String
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  startDate  DateTime
+  endDate    DateTime
+  user       User     @relation(fields: [userId], references: [id])
+  lots       Lot[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
+model Location {
+  id        String    @id @default(cuid())
+  country   String
+  city      String
+  auctions  Auction[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}

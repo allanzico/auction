@@ -25,5 +25,21 @@ export const LotSchema = z.object({
   file: typeof window === 'undefined' ? z.any() : z.instanceof(FileList)
   .refine((file) => file?.length == 1, 'File is required.')
   .refine((file) => file?.[0].type.startsWith('image/'), 'File must be an image.'),
-  auction: z.string()
+  auction: z.string(),
+  category: z.string()
+})
+
+export const LotCategorySchema = z.object({
+  name: z.string().min(2, {
+    message: "must be at least 2 characters.",
+  }),
+})
+
+export const LocationSchema = z.object({
+  country: z.string().min(2, {
+    message: "must be at least 2 characters.",
+  }),
+  city: z.string().min(2, {
+    message: "must be at least 2 characters.",
+  }),
 })

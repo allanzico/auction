@@ -17,48 +17,42 @@ import {
 import { cn } from '@/lib/utils'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
+import { getAllLots, getLotsInAuction } from '@/lib/actions/auction'
+import useSWR from 'swr'
+import { useParams } from 'next/navigation'
 
-const sortOptions = [
-  { name: 'Newest', value: 'newest' },
-  { name: 'Price: Low to High', value: 'priceLowToHigh' },
-  { name: 'Price: High to Low', value: 'priceHighToLow' },
-]
-
-const subCategories = [
-  { value: 'open', label: 'Open' },
-  { value: 'closed', label: 'Closed' },
-]
-
-const filters = [
-  {
-    id: 'countries',
-    name: 'Countries',
-    options: [
-      { value: 'uganda', label: 'Uganda', checked: false },
-      { value: 'netherlands', label: 'Netherlands', checked: false },
-    ],
-  },
-  {
-    id: 'category',
-    name: 'Category',
-    options: [
-      { value: 'organization', label: 'Organization', checked: false },
-      { value: 'accessories', label: 'Accessories', checked: false },
-    ],
-  },
-]
-
-const dummyData = [
-  { id: 1, name: 'Auction 1', category: 'organization', country: 'uganda', status: 'open', price: 5000 },
-  { id: 2, name: 'Auction 2', category: 'accessories', country: 'netherlands', status: 'closed', price: 3000 },
-  { id: 3, name: 'Auction 3', category: 'organization', country: 'uganda', status: 'closed', price: 2000 },
-  { id: 4, name: 'Auction 4', category: 'accessories', country: 'netherlands', status: 'open', price: 4000 },
-]
+const fetchData = async (auctionId: string) => {
+  return await getLotsInAuction(auctionId)
+}
 
 export default function Auction() {
+  const { id } = useParams()
+  const { data, error } = useSWR(id ? ['lots', id.toString()] : null, () => fetchData(id.toString()))
+
+  const filters = [
+    {
+      id: 'category',
+      name: 'Category',
+      options: Array.from(new Set(data?.map((lot) => JSON.stringify({ value: lot.category.id, label: lot.category.name }))))
+        .map((str) => JSON.parse(str))
+        .map((category) => ({ ...category, checked: false })),
+    },
+  ]
+  
+
+  const subCategories = [
+    { value: 'open', label: 'Open' },
+    { value: 'closed', label: 'Closed' },
+  ]
+
+  const sortOptions = [
+    { name: 'Newest', value: 'newest' },
+    { name: 'Price: Low to High', value: 'priceLowToHigh' },
+    { name: 'Price: High to Low', value: 'priceHighToLow' },
+  ]
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [selectedFilters, setSelectedFilters] = useState<any>({
-    countries: [],
     category: [],
     status: [],
   })
@@ -81,23 +75,25 @@ export default function Auction() {
     setSelectedSort(sortValue)
   }
 
-  const filteredData = dummyData
-    .filter((item) => {
-      const statusMatch = selectedFilters.status.length === 0 || selectedFilters.status.includes(item.status)
-      const countryMatch = selectedFilters.countries.length === 0 || selectedFilters.countries.includes(item.country)
-      const categoryTypeMatch = selectedFilters.category.length === 0 || selectedFilters.category.includes(item.category)
-      return statusMatch && countryMatch && categoryTypeMatch
-    })
-    .sort((a, b) => {
-      if (selectedSort === 'newest') {
-        return b.id - a.id
-      } else if (selectedSort === 'priceLowToHigh') {
-        return a.price - b.price
-      } else if (selectedSort === 'priceHighToLow') {
-        return b.price - a.price
-      }
-      return 0
-    })
+  const filteredData = data?.filter((item) => {
+    const statusMatch =
+      selectedFilters.status.length === 0 ||
+      selectedFilters.status.includes(item.auction.endDate > new Date() ? 'open' : 'closed')
+    const categoryMatch =
+      selectedFilters.category.length === 0 || selectedFilters.category.includes(item.category.id)
+    return statusMatch && categoryMatch
+  }).sort((a, b) => {
+    if (selectedSort === 'newest') {
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    }
+    if (selectedSort === 'priceLowToHigh') {
+      return a.startingBid - b.startingBid
+    }
+    if (selectedSort === 'priceHighToLow') {
+      return b.startingBid - a.startingBid
+    }
+    return 0
+  })
 
   return (
     <div className="bg-white">
@@ -179,7 +175,7 @@ export default function Auction() {
                             </h3>
                             <DisclosurePanel className="pt-6">
                               <div className="space-y-6">
-                                {section.options.map((option, optionIdx) => (
+                                {section?.options?.map((option, optionIdx) => (
                                   <div key={option.value} className="flex items-center">
                                     <input
                                       id={`filter-mobile-${section.id}-${optionIdx}`}
@@ -232,7 +228,7 @@ export default function Auction() {
                   enterFrom="transform opacity-0 scale-95"
                   enterTo="transform opacity-100 scale-100"
                   leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
+                  leaveFrom="opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
                   <MenuItems className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
@@ -321,7 +317,7 @@ export default function Auction() {
                         </h3>
                         <DisclosurePanel className="pt-6">
                           <div className="space-y-4">
-                            {section.options.map((option, optionIdx) => (
+                            {section?.options?.map((option, optionIdx) => (
                               <div key={option.value} className="flex items-center">
                                 <input
                                   id={`filter-${section.id}-${optionIdx}`}
@@ -351,13 +347,12 @@ export default function Auction() {
               {/* Product grid */}
               <div className="lg:col-span-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredData.map((item) => (
+                  {filteredData?.map((item) => (
                     <div key={item.id} className="border p-4 rounded-md">
                       <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
-                      <p className="mt-1 text-sm text-gray-500">Category: {item.category}</p>
-                      <p className="mt-1 text-sm text-gray-500">Country: {item.country}</p>
-                      <p className="mt-1 text-sm text-gray-500">Status: {item.status}</p>
-                      <p className="mt-1 text-sm text-gray-500">Price: ${item.price}</p>
+                      <p className="mt-1 text-sm text-gray-500">Category: {item.category.name}</p>
+                      <p className="mt-1 text-sm text-gray-500">Status: {item.auction.endDate > new Date() ? 'Open' : 'Closed'}</p>
+                      <p className="mt-1 text-sm text-gray-500">Price: ${item.startingBid}</p>
                     </div>
                   ))}
                 </div>

@@ -14,6 +14,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -26,8 +33,16 @@ import { AuctionSchema } from "@/lib/schemas"
 import { CalendarIcon } from "lucide-react"
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 import { cn } from "@/lib/utils"
+import { Location } from "@prisma/client"
 
-const CreateAuction = () => {
+interface CreateAuctionProps {
+  locations: Location[]
+}
+
+const CreateAuction = ({
+  locations
+}: CreateAuctionProps
+) => {
   
     const form = useForm<z.infer<typeof AuctionSchema>>({
         resolver: zodResolver(AuctionSchema),
@@ -75,19 +90,33 @@ const CreateAuction = () => {
                 </FormItem>
               )}
             />
-                       <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="auction location" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Location</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="select a location" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {
+                    locations.map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.city}, {location.country}
+                      </SelectItem>
+                    ))
+                  
+                  }
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
             <FormField
               control={form.control}
               name="file"

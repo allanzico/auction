@@ -24,13 +24,14 @@ import { Input } from "@/components/ui/input"
 import {createLot, createUploadUrl, getMyAuctions } from "@/lib/actions/auction"
 import { v4 as uuidv4 } from 'uuid';
 import { LotSchema } from "@/lib/schemas"
-import { Auction } from "@prisma/client"
+import { Auction, LotCategory } from "@prisma/client"
 
 interface CreateLotProps {
-  auctions: Auction[]
+  auctions: Auction[],
+  categories: LotCategory[]
 }
 
-const CreateLot = ({auctions}: CreateLotProps) => {
+const CreateLot = ({auctions, categories}: CreateLotProps) => {
 
     const form = useForm<z.infer<typeof LotSchema>>({
         resolver: zodResolver(LotSchema),
@@ -38,7 +39,8 @@ const CreateLot = ({auctions}: CreateLotProps) => {
             name: "",
             startingBid: 0,
             file: null,
-            auction: ""
+            auction: "",
+            category: "",
             
         },
       })
@@ -114,6 +116,33 @@ const CreateLot = ({auctions}: CreateLotProps) => {
                 </FormItem>
               )}
             />
+              <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="select a category" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {
+                    categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))
+                  
+                  }
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
                     <FormField
           control={form.control}
           name="auction"

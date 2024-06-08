@@ -5,7 +5,7 @@ import prisma from "@/db/database";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getSignedUrlForS3Upload } from "../s3";
-import { AuctionSchema, LotSchema } from "../schemas";
+import { AuctionSchema, LocationSchema, LotCategorySchema, LotSchema } from "../schemas";
 import AuctionCard from "@/components/auction/auction-card";
 
 
@@ -34,7 +34,11 @@ export const createAuction = async (data: z.infer<typeof AuctionSchema>) => {
             },
         },
         file: data.file,
-        location: data.location,
+        location: {
+            connect: {
+            id: data.location,
+            },
+        },
         startDate: data.startDate,
         endDate: data.endDate,
     },
@@ -44,7 +48,12 @@ export const createAuction = async (data: z.infer<typeof AuctionSchema>) => {
 }
 
 export const getAllAuctions = async () => {
-  return await prisma.auction.findMany()
+  return await prisma.auction.findMany(
+    {include: {
+      lots: true,
+      location: true,
+    }}
+  )
 }
 
 export const getMyAuctions = async () => {
@@ -87,9 +96,42 @@ export const createLot = async (data: z.infer<typeof LotSchema>) => {
           id: data.auction,
         },
       },
+      category: {
+        connect: {
+          id: data.category,
+        },
+      },
     },
   })
   revalidatePath("/")
+}
+export const getAllLots = async () => {
+  return await prisma.lot.findMany(
+    {include: {
+      auction: {
+        include: {
+          location: true,
+        },
+      },
+      category: true,
+    }}
+  )
+}
+
+export const getLotsInAuction = async (auctionId: string) => {
+  return await prisma.lot.findMany({
+    where: {
+      auctionId: auctionId,
+    },
+    include: {
+      category: true,
+      auction: {
+        include: {
+          location: true,
+        },
+      },
+    },
+  })
 }
 
 export const displayAllAuctions = async (page: number) => {
@@ -109,3 +151,52 @@ export const displayAllAuctions = async (page: number) => {
    console.error(error)
  }
 }
+
+export const createLotCategory = async (data: z.infer<typeof LotCategorySchema>) => {
+    const  session = await auth()
+
+    if (!session) {
+        throw new Error("Unauthorized")
+    }
+
+    const user = session.user
+    if(!user || !user.id) {
+        throw new Error("Unauthorized")
+    }
+
+  await prisma.lotCategory.create({
+    data: {
+      name: data.name,
+    },
+  })
+  revalidatePath("/")
+}
+
+export const getLotCategories = async () => {
+  return await prisma.lotCategory.findMany()
+}
+
+export const createLocation = async (data: z.infer<typeof LocationSchema>) => {
+  const  session = await auth()
+
+  if (!session) {
+      throw new Error("Unauthorized")
+  }
+
+  const user = session.user
+  if(!user || !user.id) {
+      throw new Error("Unauthorized")
+  } 
+
+  await prisma.location.create({
+    data: {
+      country: data.country,
+      city: data.city,
+    },
+  })
+}
+
+export const getLocations = async () => {
+  return await prisma.location.findMany()
+}
+

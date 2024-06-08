@@ -24,6 +24,7 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
   useEffect(() => {
     setIsClient(true)
   }, [])
+  console.log(auction)
  
   return isClient && (
     <Link 
