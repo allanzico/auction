@@ -36,7 +36,7 @@ const CreateLot = ({auctions}: CreateLotProps) => {
         resolver: zodResolver(LotSchema),
         defaultValues: {
             name: "",
-            price: 0,
+            startingBid: 0,
             file: null,
             auction: ""
             
@@ -72,7 +72,7 @@ const CreateLot = ({auctions}: CreateLotProps) => {
                 <FormItem>
                   <FormLabel>Item</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="lot name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -80,13 +80,13 @@ const CreateLot = ({auctions}: CreateLotProps) => {
             />
             <FormField
               control={form.control}
-              name="price"
+              name="startingBid"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Price</FormLabel>
                   <FormControl>
                     <Input 
-                    placeholder="price" 
+                    placeholder="starting bid" 
                     {...field} 
                     type="number"
                     />

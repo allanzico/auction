@@ -24,13 +24,19 @@ const Navbar = async ({
             href="/bid"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
-            Bids
+            My Bids
           </Link>
           <Link
             href="/auction"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
-            Auction
+            create Auction
+          </Link>
+          <Link
+            href="/lot"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+          >
+            create Lot
           </Link>
           {
             session ? (

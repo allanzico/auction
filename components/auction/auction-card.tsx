@@ -1,12 +1,13 @@
 
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { MotionDiv } from '../MotionDiv'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Auction } from "@prisma/client"
 import { getImageUrl } from '@/lib/utils'
+import CountdownTimer from '../ui/countdown-timer'
 
 interface AuctionCardProps {
     auction: Auction,
@@ -18,8 +19,13 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
     visible: { opacity: 1 },
   }
   const imageUrl = getImageUrl(auction.file)
+  const [isClient, setIsClient] = React.useState(false)
 
-  return (
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+ 
+  return isClient && (
     <Link 
     href={`/auction/${auction.id}`}
     >
@@ -52,11 +58,11 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
                       </a>
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                    {auction.name}
+                    {auction.lots.length} lots
                     </p>
                   </div>
                   <p className="text-sm font-medium text-gray-900">
-                  {auction.name}
+                  <CountdownTimer start={auction.startDate} end={auction.endDate} />
                   </p>
                 </div>
        

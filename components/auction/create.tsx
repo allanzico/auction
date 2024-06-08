@@ -13,11 +13,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { createAuction, createUploadUrl } from "@/lib/actions/auction"
 import { v4 as uuidv4 } from 'uuid';
 import { AuctionSchema } from "@/lib/schemas"
-
+import { CalendarIcon } from "lucide-react"
+import { format, formatDistance, formatRelative, subDays } from 'date-fns'
+import { cn } from "@/lib/utils"
 
 const CreateAuction = () => {
   
@@ -25,7 +33,10 @@ const CreateAuction = () => {
         resolver: zodResolver(AuctionSchema),
         defaultValues: {
             name: "",
-            file: null
+            file: null,
+            location: "",
+            startDate: new Date(),
+            endDate: new Date(),
         },
       })
       const fileRef = form.register("file");
@@ -58,7 +69,20 @@ const CreateAuction = () => {
                 <FormItem>
                   <FormLabel>Item</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="auction name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+                       <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="auction location" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -83,6 +107,93 @@ const CreateAuction = () => {
                 </FormItem>
               )}
             />
+           
+        <div className="md:flex md:flex-row md:gap-4 md:items-start">
+        <FormField
+          control={form.control}
+          name="startDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Start</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date < new Date() || date < new Date("1900-01-01")
+                      
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="endDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>End</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    disabled={(date) =>
+                      date < new Date() || date < new Date("1900-01-01")
+                      
+                    }
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        </div>
             <Button type="submit">Submit</Button>
           </form>
         </Form>

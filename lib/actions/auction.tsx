@@ -34,6 +34,9 @@ export const createAuction = async (data: z.infer<typeof AuctionSchema>) => {
             },
         },
         file: data.file,
+        location: data.location,
+        startDate: data.startDate,
+        endDate: data.endDate,
     },
   })
   revalidatePath("/")
@@ -77,7 +80,7 @@ export const createLot = async (data: z.infer<typeof LotSchema>) => {
   await prisma.lot.create({
     data: {
       name: data.name,
-      price: data.price,
+      startingBid: data.startingBid,
       file: data.file,
       auction: {
         connect: {
@@ -91,9 +94,16 @@ export const createLot = async (data: z.infer<typeof LotSchema>) => {
 
 export const displayAllAuctions = async (page: number) => {
   try {
-    const auctions = await prisma.auction.findMany({})
+    const auctions = await prisma.auction.findMany({
+      include: {
+        lots: true,
+      }
+    })
     return auctions.slice((page - 1) * 2, page * 100).map((auction, index) => {
-      return <AuctionCard key={auction.id} auction={auction} index={index} />
+      return <>
+      <AuctionCard key={auction.id} auction={auction} index={index} />
+      </>
+
     })    
  } catch (error) {
    console.error(error)
