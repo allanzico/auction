@@ -94,8 +94,8 @@ export interface Auction {
   location?: Location
   startDate: Date
   endDate: Date
-  user?: User
-  lots?: Lot[]
+  user: User
+  lots: Lot[]
   createdAt?: Date
   updatedAt?: Date
 }
