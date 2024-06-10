@@ -10,7 +10,7 @@ import CountdownTimer from '../ui/countdown-timer'
 import { Auction } from '@/types'
 
 interface AuctionCardProps {
-    auction: any,
+    auction: Auction,
     index: number,
 }
 const AuctionCard = ({auction, index}: AuctionCardProps) => {
