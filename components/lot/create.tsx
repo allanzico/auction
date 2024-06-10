@@ -24,7 +24,8 @@ import { Input } from "@/components/ui/input"
 import {createLot, createUploadUrl, getMyAuctions } from "@/lib/actions/auction"
 import { v4 as uuidv4 } from 'uuid';
 import { LotSchema } from "@/lib/schemas"
-import { Auction, LotCategory } from "@/types"
+import { Auction, LotCategory } from "@prisma/client"
+
 
 
 interface CreateLotProps {

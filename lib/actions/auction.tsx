@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import { getSignedUrlForS3Upload } from "../s3";
 import { AuctionSchema, LocationSchema, LotCategorySchema, LotSchema } from "../schemas";
 import AuctionCard from "@/components/auction/auction-card";
-import { Auction } from "@/types";
 
 
 export const createUploadUrl = async (key: string, type: string) => {
