@@ -20,12 +20,12 @@ const Navbar = async ({
           >
             Home
           </Link>
-          <Link
+          {/* <Link
             href="/bid"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             My Bids
-          </Link>
+          </Link> */}
           <Link
             href="/auction"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"

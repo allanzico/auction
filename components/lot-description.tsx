@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input"
 import { BidSchema } from '@/lib/schemas';
 import { useSession } from "next-auth/react"
 import { Lot } from '@/types';
+import { addBid } from '@/lib/actions/auction';
+import { toast } from './ui/use-toast';
 
 interface LotDescriptionProps {
   lot: Lot
@@ -25,21 +27,32 @@ interface LotDescriptionProps {
 
 export function LotDescription({lot}: LotDescriptionProps) {
   const { data: session, status } = useSession()
-  const latestBid = lot?.bids && lot.bids.length > 0 ? lot.bids[0].amount + 1 : lot?.startingBid;
-  const [bid , setBid] = useState<number>(latestBid)
+  const latestBid = lot?.bids && lot.bids.length > 0 ? lot.bids[0].amount : lot?.startingBid;
 
   const form = useForm<z.infer<typeof BidSchema>>({
     resolver: zodResolver(BidSchema),
     defaultValues: {
-        amount: latestBid,
+        amount: 0,
     },
   })
 
 async function onSubmit(data: z.infer<typeof BidSchema>) {
-
+  console.log(data)
+  // await addBid(lot.id, data.amount).then(() => {
+  //   toast({
+  //     title: "Bid placed",
+  //     description: (
+  //       <div className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+  //         Bid sent successfully!
+  //       </div>
+  //     ),
+  //   })
+  // })
 }
 
+
   return (
+
     <>
       <div className="mb-6 flex flex-col border-b pb-6 dark:border-neutral-700">
         <h1 className="mb-2 text-5xl font-medium">Title</h1>
@@ -66,7 +79,7 @@ async function onSubmit(data: z.infer<typeof BidSchema>) {
                 <FormItem>
                   <FormLabel>place your bid here</FormLabel>
                   <FormControl>
-                    <Input placeholder="amount" {...field} type='number' onChangeCapture={(e) => setBid(parseFloat(e.currentTarget.value))} />
+                    <Input placeholder="amount" {...field} type='number' />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -74,10 +87,11 @@ async function onSubmit(data: z.infer<typeof BidSchema>) {
             />
             <Suspense fallback={null}>
               <Button className="w-full" disabled={
-                bid <= latestBid
-              } > Bid</Button>
+                form.getValues('amount') <= latestBid
+              } type='submit' > Bid</Button>
               </Suspense>
           </form>
+         
         </Form>
         ) : <Button className="w-full" onClick={() => console.log('login') } > Login to bid</Button>
       }

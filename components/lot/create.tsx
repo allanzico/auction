@@ -24,13 +24,13 @@ import { Input } from "@/components/ui/input"
 import {createLot, createUploadUrl, getMyAuctions } from "@/lib/actions/auction"
 import { v4 as uuidv4 } from 'uuid';
 import { LotSchema } from "@/lib/schemas"
-import { Auction, LotCategory } from "@prisma/client"
+
 
 
 
 interface CreateLotProps {
-  auctions: Auction[],
-  categories: LotCategory[]
+  auctions: any,
+  categories: any
 }
 
 const CreateLot = ({auctions, categories}: CreateLotProps) => {
@@ -132,7 +132,7 @@ const CreateLot = ({auctions, categories}: CreateLotProps) => {
                 </FormControl>
                 <SelectContent>
                   {
-                    categories.map((category) => (
+                    categories.map((category: any) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
@@ -159,7 +159,7 @@ const CreateLot = ({auctions, categories}: CreateLotProps) => {
                 </FormControl>
                 <SelectContent>
                   {
-                    auctions.map((auction) => (
+                    auctions.map((auction: any) => (
                       <SelectItem key={auction.id} value={auction.id}>
                         {auction.name}
                       </SelectItem>

@@ -26,7 +26,7 @@ const fetchData = async (auctionId: string) => {
   return await getLotsInAuction(auctionId)
 }
 
-export default function Auction() {
+const Auction = () => {
   const { id } = useParams()
   const { data, error } = useSWR(id ? ['lots', id.toString()] : null, () => fetchData(id.toString()))
 
@@ -40,7 +40,6 @@ export default function Auction() {
     },
   ]
   
-
   const subCategories = [
     { value: 'open', label: 'Open' },
     { value: 'closed', label: 'Closed' },
@@ -361,3 +360,5 @@ export default function Auction() {
     </div>
   )
 }
+
+export default Auction
