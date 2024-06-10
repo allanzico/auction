@@ -20,7 +20,7 @@ import { useSession } from "next-auth/react"
 import { Lot } from '@/types';
 
 interface LotDescriptionProps {
-  lot: Lot;
+  lot: Lot
 }
 
 export function LotDescription({lot}: LotDescriptionProps) {

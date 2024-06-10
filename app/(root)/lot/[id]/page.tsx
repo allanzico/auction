@@ -12,7 +12,7 @@ const fetchData = async (lotId: string) => {
 }
 const Lot = () => {
   const {id} = useParams()
-  const { data, error } = useSWR(id ? ['lot', id.toString()] : null, () => fetchData(id.toString()))
+  const { data, error } = useSWR<any>(id ? ['lot', id.toString()] : null,  () => fetchData(id.toString()) )
 
   const images =  [
     {

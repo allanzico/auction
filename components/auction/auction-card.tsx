@@ -58,7 +58,7 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
                       </a>
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                    {auction.lots.length} lots
+                    {auction?.lots?.length} lots
                     </p>
                   </div>
                   <p className="text-sm font-medium text-gray-900">

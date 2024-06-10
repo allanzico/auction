@@ -36,7 +36,7 @@ const LotCard = ({lot}: LotCardProps) => {
        
         <div className="border-b w-10 pt-2" />
         <p className="pt-2 text-sm text-gray-500 flex-grow">
-            {lot.auction.location.city}, {lot.auction.location.country} 
+            {lot?.auction?.location?.city}, {lot?.auction?.location?.country} 
         </p>
         <p className="pt-2 text-sm text-gray-500 flex-grow">
           <span className="hover:bg-gray-300 delay-100 duration-100 bg-gray-200 rounded-sm py-1 px-2 text-xs">
