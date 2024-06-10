@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react";
 
 export default async function RootLayout({
     children,
@@ -7,8 +8,11 @@ export default async function RootLayout({
  
     return (
   <>
+  <SessionProvider >
    <div className="w-full">
    {children}
-      </div></>
+      </div>
+      </SessionProvider>
+      </>
     );
   }

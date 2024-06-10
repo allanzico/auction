@@ -43,3 +43,10 @@ export const LocationSchema = z.object({
     message: "must be at least 2 characters.",
   }),
 })
+
+export const BidSchema = z.object({
+  amount: z.coerce.number().min(1, {
+    message: "must be a number.",
+  }),
+  lot: z.string(),
+})

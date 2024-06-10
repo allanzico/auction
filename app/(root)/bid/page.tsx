@@ -32,7 +32,7 @@ const Bids = () => {
     'Servers',
   ]
   return (
-    <div>
+    <div className="flex items-center justify-center flex-col mx-auto gap-4 bg-white">
           <Button 
       onClick={async () => {
         locations.map(async (location) => {

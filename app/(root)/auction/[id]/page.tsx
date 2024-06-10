@@ -20,6 +20,7 @@ import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from
 import { getAllLots, getLotsInAuction } from '@/lib/actions/auction'
 import useSWR from 'swr'
 import { useParams } from 'next/navigation'
+import LotCard from '@/components/lot/LotCard'
 
 const fetchData = async (auctionId: string) => {
   return await getLotsInAuction(auctionId)
@@ -271,13 +272,9 @@ export default function Auction() {
           </div>
 
           <section aria-labelledby="products-heading" className="pb-24 pt-6">
-            <h2 id="products-heading" className="sr-only">
-              Products
-            </h2>
-
-            <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-9">
               {/* Filters */}
-              <form className="hidden lg:block">
+              <form className="hidden lg:block lg:col-span-2">
                 <h3 className="sr-only">Status</h3>
                 <ul role="list" className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
                   {subCategories.map((status) => (
@@ -345,17 +342,17 @@ export default function Auction() {
               </form>
 
               {/* Product grid */}
-              <div className="lg:col-span-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-7">
+              <main className="flex flex-row gap-2 mt-2">
+                      <section className="flex-grow">
+
+                        <div className="flex flex-col">
                   {filteredData?.map((item) => (
-                    <div key={item.id} className="border p-4 rounded-md">
-                      <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
-                      <p className="mt-1 text-sm text-gray-500">Category: {item.category.name}</p>
-                      <p className="mt-1 text-sm text-gray-500">Status: {item.auction.endDate > new Date() ? 'Open' : 'Closed'}</p>
-                      <p className="mt-1 text-sm text-gray-500">Price: ${item.startingBid}</p>
-                    </div>
+                    <LotCard key={item.id} lot={item} />
                   ))}
                 </div>
+              </section>
+              </main>
               </div>
             </div>
           </section>

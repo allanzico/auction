@@ -1,6 +1,5 @@
 import { displayAllAuctions } from '@/lib/actions/auction'
 import React from 'react'
-import LoadMore from '../LoadMore'
 
 const AuctionList = () => {
     const data  = displayAllAuctions(1)

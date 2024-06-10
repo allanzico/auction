@@ -176,6 +176,19 @@ export const getLotCategories = async () => {
   return await prisma.lotCategory.findMany()
 }
 
+export const getLot = async (id: string) => {
+  return await prisma.lot.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      auction: true,
+      category: true,
+      bids : true,
+    },
+  })
+}
+
 export const createLocation = async (data: z.infer<typeof LocationSchema>) => {
   const  session = await auth()
 
@@ -198,5 +211,46 @@ export const createLocation = async (data: z.infer<typeof LocationSchema>) => {
 
 export const getLocations = async () => {
   return await prisma.location.findMany()
+}
+
+export const getLotBids = async (lotId: string) => {
+  return await prisma.bid.findMany({
+    where: {
+      lotId: lotId,
+    },
+    include: {
+      user: true,
+    },
+  })
+}
+
+export const addBid = async (lotId: string, amount: number) => {
+  const  session = await auth()
+
+  if (!session) {
+      throw new Error("Unauthorized")
+  }
+
+  const user = session.user
+  if(!user || !user.id) {
+      throw new Error("Unauthorized")
+  }
+
+  await prisma.bid.create({
+    data: {
+      amount: amount,
+      lot: {
+        connect: {
+          id: lotId,
+        },
+      },
+      user: {
+        connect: {
+          id: user.id,
+        },
+      },
+    },
+  })
+  revalidatePath(`/lot/${lotId}`)
 }
 

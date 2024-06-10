@@ -33,10 +33,10 @@ import { AuctionSchema } from "@/lib/schemas"
 import { CalendarIcon } from "lucide-react"
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 import { cn } from "@/lib/utils"
-import { Location } from "@prisma/client"
+
 
 interface CreateAuctionProps {
-  locations: Location[]
+  locations: any
 }
 
 const CreateAuction = ({
@@ -104,7 +104,7 @@ const CreateAuction = ({
                 </FormControl>
                 <SelectContent>
                   {
-                    locations.map((location) => (
+                    locations.map((location: any) => (
                       <SelectItem key={location.id} value={location.id}>
                         {location.city}, {location.country}
                       </SelectItem>
