@@ -4,7 +4,6 @@
 import React, { useEffect, useState } from 'react'
 import { MotionDiv } from '../MotionDiv'
 import Link from 'next/link'
-import Image from 'next/image'
 import { getImageUrl } from '@/lib/utils'
 import CountdownTimer from '../ui/countdown-timer'
 import { Auction } from '@/types'

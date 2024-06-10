@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import {
   Dialog,
   DialogPanel,
@@ -17,7 +17,7 @@ import {
 import { cn } from '@/lib/utils'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
-import { getAllLots, getLotsInAuction } from '@/lib/actions/auction'
+import { getLotsInAuction } from '@/lib/actions/auction'
 import useSWR from 'swr'
 import { useParams } from 'next/navigation'
 import LotCard from '@/components/lot/LotCard'
