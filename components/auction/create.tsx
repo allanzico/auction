@@ -33,10 +33,11 @@ import { AuctionSchema } from "@/lib/schemas"
 import { CalendarIcon } from "lucide-react"
 import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 import { cn } from "@/lib/utils"
+import { Location } from "@/types"
 
 
 interface CreateAuctionProps {
-  locations: any
+  locations: Location[]
 }
 
 const CreateAuction = ({

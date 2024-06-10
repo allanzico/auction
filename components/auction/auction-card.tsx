@@ -1,13 +1,13 @@
 
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MotionDiv } from '../MotionDiv'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Auction } from "@prisma/client"
 import { getImageUrl } from '@/lib/utils'
 import CountdownTimer from '../ui/countdown-timer'
+import { Auction } from '@/types'
 
 interface AuctionCardProps {
     auction: Auction,
@@ -19,7 +19,7 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
     visible: { opacity: 1 },
   }
   const imageUrl = getImageUrl(auction.file)
-  const [isClient, setIsClient] = React.useState(false)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
     setIsClient(true)

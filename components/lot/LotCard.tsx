@@ -6,9 +6,10 @@ import { StarIcon } from "lucide-react";
 import { getImageUrl } from "@/lib/utils";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { Lot } from "@/types";
 
 interface LotCardProps {
-    lot: any
+    lot: Lot
 }
 const LotCard = ({lot}: LotCardProps) => {
     const imageUrl = getImageUrl(lot.file)

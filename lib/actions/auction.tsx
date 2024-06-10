@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { getSignedUrlForS3Upload } from "../s3";
 import { AuctionSchema, LocationSchema, LotCategorySchema, LotSchema } from "../schemas";
 import AuctionCard from "@/components/auction/auction-card";
+import { Auction } from "@/types";
 
 
 export const createUploadUrl = async (key: string, type: string) => {
@@ -141,7 +142,7 @@ export const displayAllAuctions = async (page: number) => {
         lots: true,
       }
     })
-    return auctions.slice((page - 1) * 2, page * 100).map((auction, index) => {
+    return auctions.slice((page - 1) * 2, page * 100).map((auction: any, index) => {
       return <>
       <AuctionCard key={auction.id} auction={auction} index={index} />
       </>

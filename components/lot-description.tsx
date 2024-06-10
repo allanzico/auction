@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -17,15 +17,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { BidSchema } from '@/lib/schemas';
 import { useSession } from "next-auth/react"
+import { Lot } from '@/types';
 
 interface LotDescriptionProps {
-  lot: any;
+  lot: Lot;
 }
 
 export function LotDescription({lot}: LotDescriptionProps) {
   const { data: session, status } = useSession()
-  const latestBid = lot?.bids && lot.bids.length > 0 ? lot.bids[0] + 1 : lot?.startingBid;
-  const [bid , setBid] = React.useState(latestBid)
+  const latestBid = lot?.bids && lot.bids.length > 0 ? lot.bids[0].amount + 1 : lot?.startingBid;
+  const [bid , setBid] = useState<number>(latestBid)
 
   const form = useForm<z.infer<typeof BidSchema>>({
     resolver: zodResolver(BidSchema),
@@ -37,9 +38,6 @@ export function LotDescription({lot}: LotDescriptionProps) {
 async function onSubmit(data: z.infer<typeof BidSchema>) {
 
 }
-
-console.log(form.getValues('amount'))
-console.log(lot?.startingBid)
 
   return (
     <>
@@ -68,7 +66,7 @@ console.log(lot?.startingBid)
                 <FormItem>
                   <FormLabel>place your bid here</FormLabel>
                   <FormControl>
-                    <Input placeholder="amount" {...field} type='number' onChangeCapture={(e) => setBid(e.currentTarget.value)} />
+                    <Input placeholder="amount" {...field} type='number' onChangeCapture={(e) => setBid(parseFloat(e.currentTarget.value))} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
