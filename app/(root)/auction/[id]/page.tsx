@@ -347,7 +347,7 @@ export default function Auction() {
                       <section className="flex-grow">
 
                         <div className="flex flex-col">
-                  {filteredData?.map((item) => (
+                  {filteredData?.map((item: any) => (
                     <LotCard key={item.id} lot={item} />
                   ))}
                 </div>
