@@ -3,7 +3,7 @@ import { Montserrat as FontSans } from "next/font/google"
 import "./globals.css";
 
 import { cn } from "@/lib/utils"
-import Navbar from "@/components/navbar/index";
+import NavBar from "@/components/navigation/nav-bar";
  
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontSans.variable} suppressHydrationWarning>
       <body className=" bg-white text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
-        <Navbar />
+        <NavBar locale="en" />
         <main>{children}</main>
       </body>
     </html>
