@@ -1,9 +1,5 @@
-import React from 'react'
-
-const Bid = () => {
-  return (
-    <div>Auction</div>
-  )
-}
-
-export default Bid
+export default function Page() {
+    return (
+      <div>Hello from Bid</div>
+    )
+  }

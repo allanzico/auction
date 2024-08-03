@@ -2,7 +2,7 @@
 
 import { Gallery } from '@/components/gallery'
 import { LotDescription } from '@/components/lot-description'
-import { getLot, getLotBids } from '@/lib/actions/auction'
+import { getLot, getLotBids } from '@/actions/auction'
 import { useParams } from 'next/navigation'
 import React,{ Suspense } from 'react'
 import useSWR from 'swr'
@@ -10,7 +10,7 @@ import useSWR from 'swr'
 const fetchData = async (lotId: string) => {
   return await getLot(lotId)
 }
-const Lot = () => {
+const Page = () => {
   const {id} = useParams()
   const { data, error } = useSWR<any>(id ? ['lot', id.toString()] : null,  () => fetchData(id.toString()) )
 
@@ -64,4 +64,4 @@ const Lot = () => {
   )
 }
 
-export default Lot
+export default Page

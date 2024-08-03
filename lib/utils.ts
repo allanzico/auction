@@ -12,16 +12,6 @@ export const getImageUrl = (file: string) => {
 }
 
 
-
-
-
-
-
-
-
-
-
-
 export const createUrl = (pathname: string, params: URLSearchParams | ReadonlyURLSearchParams) => {
   const paramsString = params.toString();
   const queryString = `${paramsString.length ? '?' : ''}${paramsString}`;

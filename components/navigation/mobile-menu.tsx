@@ -10,6 +10,7 @@ import {
 import { ChevronDownIcon } from '@radix-ui/react-icons'
 import { SheetTrigger } from '@/components/ui/sheet';
 import { MenuList } from '@/lib/menu-list';
+import AuthNav from './auth-nav';
 
 const MobileMenu = ({
   locale
@@ -35,7 +36,7 @@ const MobileMenu = ({
              <Collapsible className=" shadow-none items-center py-2 px-4 rounded-md justify-center">
              <CollapsibleTrigger className='flex flex-row gap-2 items-center justify-center'>
              <p
-                  className='max-w-[200px] truncate text-lg text-gray-900 font-normal'
+                  className='max-w-[200px] truncate text-xs text-gray-900 font-normal'
                 >
                   {label}
                 </p>
@@ -49,7 +50,7 @@ const MobileMenu = ({
                     <SheetTrigger asChild>
                     <p
                  
-                  className='max-w-[200px] truncate text-sm text-gray-900 font-normal'
+                  className='max-w-[200px] truncate text-xs text-gray-900 font-normal'
                 >
                   {submenu.label}
                 </p>
@@ -73,7 +74,7 @@ const MobileMenu = ({
               <Link href={href}>
               <SheetTrigger asChild>
               <p
-                  className='max-w-[200px] truncate text-lg text-gray-900 font-normal'
+                  className='max-w-[200px] truncate text-sm text-gray-900 font-normal'
                 >
                   {label}
                 </p>
@@ -89,6 +90,7 @@ const MobileMenu = ({
       })
     }
       </div>
+      {/* <AuthNav /> */}
       <div>
         <Button
           className="flex shadow-none gap-2 h-10 items-center py-2 px-4 rounded-md justify-center"

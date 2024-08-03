@@ -1,11 +1,11 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { createLocation, getLotCategories, getMyAuctions } from '@/lib/actions/auction'
+import { createLocation, getLotCategories, getMyAuctions } from '@/actions/auction'
 import React from 'react'
-import { createLotCategory, getLocations } from '@/lib/actions/auction'
+import { createLotCategory, getLocations } from '@/actions/auction'
 
-const Bids = () => {
+const Page = () => {
   const locations = [
     {
       country: 'United States',
@@ -53,4 +53,4 @@ const Bids = () => {
   )
 }
 
-export default Bids
+export default Page

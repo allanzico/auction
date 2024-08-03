@@ -15,6 +15,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
+import AuthNav from './auth-nav'
+import { BirdIcon } from 'lucide-react'
 
 const NavBar = ({locale}: {locale: string}) => {
 
@@ -23,7 +25,7 @@ const NavBar = ({locale}: {locale: string}) => {
         <nav aria-label="Global" className="mx-auto flex w-full items-center justify-between py-4 md:py-16 px-6 lg:px-8">
           <div className="flex lg:flex-1">
             <Link href="/">
-              <h1 className="text-4xl font-bold text-primary">LOGO</h1>
+              <BirdIcon className="h-8 w-8" />
             </Link>
           </div>
           <div className="flex lg:hidden">
@@ -32,10 +34,8 @@ const NavBar = ({locale}: {locale: string}) => {
               <HamburgerMenuIcon className="h-6 w-6" />
               </SheetTrigger>
               <SheetContent side={'left'}>
-      
                 <MobileMenu locale={locale} />
-                <SheetClose asChild>
-                  
+                <SheetClose asChild>   
                 </SheetClose>
               </SheetContent>
             </Sheet>
@@ -44,6 +44,7 @@ const NavBar = ({locale}: {locale: string}) => {
           <div className="hidden md:flex">
           <NavMenu />
           </div>
+        {/* <AuthNav />   */}
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <Button  className="text-sm font-semibold leading-6 text-white">
               DONATE

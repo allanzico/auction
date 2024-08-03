@@ -15,7 +15,7 @@ const LotCard = ({lot}: LotCardProps) => {
     const imageUrl = getImageUrl(lot.file)
 
   return (
-    <Link href={`/lot/${lot.id}`}>
+    <Link href={`/auction/lot/${lot.id}`}>
 <div
       className="flex py-4 px-2 border-b cursor-pointer hover:opacity-80 hover:shadow-lg transition duration-200 ease-out"
     >

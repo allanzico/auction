@@ -14,11 +14,11 @@ import {
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { MenuList } from "@/lib/menu-list"
+import { auth } from "@/auth"
 
 const NavMenu = () => {
   const pathname = usePathname();
   const menuList = MenuList(pathname);
-
 
   return (
     <NavigationMenu>
@@ -36,7 +36,7 @@ const NavMenu = () => {
                     <NavigationMenuItem key={index}>
                         {
                             submenus.length > 0 ?
-                            <NavigationMenuTrigger className="focus:bg-transparent hover:bg-green-50 ">
+                            <NavigationMenuTrigger className="focus:bg-transparent ">
                                  <p
                   className='max-w-[200px] truncate text-lg text-gray-900 font-semibold '
                 >
@@ -44,13 +44,13 @@ const NavMenu = () => {
                 </p>
                             </NavigationMenuTrigger> :
                             <NavigationMenuLink 
-                            className="focus:bg-transparent hover:bg-green-50 "
+                            className="focus:bg-transparent"
                             asChild>
                               <Link href={href} className={navigationMenuTriggerStyle()}>
                               <p
                   className={cn(
-                    "max-w-[200px] truncate text-lg text-gray-900 font-semibold",
-                    active && "border-b-2 border-primary bg-green-50 px-2 py-1 rounded-sm"
+                    "max-w-[200px] truncate text-sm text-gray-900 font-semibold",
+                    active && "border-b-2 border-primary"
                   )}
                 >
                   {label}
@@ -67,7 +67,7 @@ const NavMenu = () => {
                                             key={index}
                                             title={submenu.label}
                                             href={submenu.href}
-                                            className="flex flex-col w-full focus:bg-transparent hover:bg-green-50 "
+                                            className="flex flex-col w-full focus:bg-transparent "
                                         >
                                             {submenu.label}
                                         </ListItem>

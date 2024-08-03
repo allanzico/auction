@@ -1,34 +1,44 @@
 
-
+type SuperSubMenu = {
+  href: string;
+  label: string;
+  active: boolean;
+};
   
   type Submenu = {
     href: string;
     label: string;
     active: boolean;
   };
-  
+
   type Menu = {
     href: string;
     label: string;
     active: boolean;
-    submenus: Submenu[];
+    submenus: Submenu[
+    ];
   };
   
 
   export function MenuList(pathname: string): Menu[] {
     return [
           {
-            href: "/sponsor",
-            label: "Sponsor",
-            active: pathname  === "/sponsor",
+            href: "/",
+            label: "Auctions",
+            active: pathname  === "/",
             submenus: [
+              
             ]
           },{
             href: "/school",
             label: "School",
             active: pathname  === "/school",
             submenus: [
-
+              {
+                href: "/school/school-of-engineering",
+                label: "School of Engineering",
+                active: pathname  === "/school/school-of-engineering",
+              }
             ]
           },
           {

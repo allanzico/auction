@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
-import { createAuction, createUploadUrl } from "@/lib/actions/auction"
+import { createAuction, createUploadUrl } from "@/actions/auction"
 import { v4 as uuidv4 } from 'uuid';
 import { AuctionSchema } from "@/lib/schemas"
 import { CalendarIcon } from "lucide-react"

@@ -4,8 +4,8 @@ import { auth } from "@/auth";
 import prisma from "@/db/database";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { getSignedUrlForS3Upload } from "../s3";
-import { AuctionSchema, LocationSchema, LotCategorySchema, LotSchema } from "../schemas";
+import { getSignedUrlForS3Upload } from "../lib/s3";
+import { AuctionSchema, LocationSchema, LotCategorySchema, LotSchema } from "../lib/schemas";
 import AuctionCard from "@/components/auction/auction-card";
 
 
