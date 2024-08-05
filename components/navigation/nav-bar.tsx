@@ -44,11 +44,21 @@ const NavBar = ({locale}: {locale: string}) => {
           <div className="hidden md:flex">
           <NavMenu />
           </div>
-        {/* <AuthNav />   */}
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <Button  className="text-sm font-semibold leading-6 text-white">
-              DONATE
+        
+          <div className="hidden lg:gap-2 lg:items-center lg:flex lg:flex-1 lg:justify-end">
+            <Button variant="ghost">
+              <Link href="/register">
+              Create Account
+              </Link>
             </Button>
+            <Button className="text-sm font-semibold leading-6 text-white">
+              <Link href="/login">
+              Login
+              </Link>
+            </Button>
+            {/* <Button  className="text-sm font-semibold leading-6 text-white">
+              DONATE
+            </Button> */}
           </div>
         </nav>
       </header>

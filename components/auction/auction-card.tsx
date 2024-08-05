@@ -38,10 +38,9 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
       duration: 0.5
      }}
      viewport={{ amount: 0}}
-     className="group relative"
     >
-           
-                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-56">
+           <div className="group relative" >
+           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-56">
                   <img
                     src={imageUrl}
                     alt={auction.name}
@@ -64,6 +63,8 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
                   <CountdownTimer start={auction.startDate} end={auction.endDate} />
                   </p>
                 </div>
+           </div>
+                
        
     </MotionDiv>
     </Link>

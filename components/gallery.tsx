@@ -40,7 +40,7 @@ export function Gallery({ images }: { images: { src: string; altText: string }[]
           />
         )}
 
-        {images.length > 1 ? (
+        {/* {images.length > 1 ? (
           <div className="absolute bottom-[15%] flex w-full justify-center">
             <div className="mx-auto flex h-11 items-center rounded-md border border-white bg-neutral-50/80 text-neutral-500 backdrop-blur dark:border-black dark:bg-neutral-900/80">
               <Link
@@ -62,11 +62,19 @@ export function Gallery({ images }: { images: { src: string; altText: string }[]
               </Link>
             </div>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
 
       {images.length > 1 ? (
-        <ul className="my-12 flex items-center justify-center gap-2 overflow-auto py-1 lg:mb-0">
+        <ul className="flex items-center justify-center gap-2 overflow-auto py-1 lg:mb-0">
+         <Link
+                aria-label="Previous product image"
+                href={previousUrl}
+                className={buttonClassName}
+                scroll={false}
+              >
+                <ArrowLeftIcon className="h-5" />
+              </Link>
           {images.map((image, index) => {
             const isActive = index === imageIndex;
             const imageSearchParams = new URLSearchParams(searchParams.toString());
@@ -89,9 +97,18 @@ export function Gallery({ images }: { images: { src: string; altText: string }[]
                     active={isActive}
                   />
                 </Link>
+                
               </li>
             );
           })}
+          <Link
+                aria-label="Next product image"
+                href={nextUrl}
+                className={buttonClassName}
+                scroll={false}
+              >
+                <ArrowRightIcon className="h-5" />
+              </Link>
         </ul>
       ) : null}
     </>

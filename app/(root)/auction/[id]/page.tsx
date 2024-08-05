@@ -28,47 +28,13 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChevronDown, Filter } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { ProductState } from "@/lib/validators/product-validators";
+import LotEmptyState from "@/components/lot/empty-state";
+import LotCard from "@/components/lot/lot-card";
+import LotSkeleton from "@/components/lot/lot-skeleton";
 // import EmptyState from "@/components/products/empty-state";
-
-const SORT_OPTIONS = [
-  { name: "None", value: "none" },
-  { name: "Price: Low to High", value: "price-asc" },
-  { name: "Price: High to Low", value: "price-desc" },
-] as const;
-
-const STATUS_FILTERS = {
-  id: "status",
-  name: "Status",
- options: [
-  {value: "open", label: "Open"},
-  {value: "closed", label: "Closed"},
- ]
-}
-
-const CITY_FILTERS = {
-  id: "city",
-  name: "City",
- options: [
-  {value: "New York", label: "New York"},
-  {value: "San Francisco", label: "San Francisco"},
- ]
-}
-
-const PRICE_FILTERS = {
-  id: "price",
-  name: "Price",
- options: [
-  {value: [0,100], label: "Any price"},
-  {value: [0,20], label: "Under $20"},
-  {value: [0,40], label: "$20 - $40"},
-  //custom option defined in JSX
- ]
-} as const;
-
-
 
 const DEFAULT_CUSTOM_PRICE_RANGE = [0, 100] as [number, number];
 
@@ -78,45 +44,48 @@ const fetchData = async (auctionId: string) => {
 
 export default function Page() {
   const { id } = useParams()
-  const { data: lots, error } = useSWR(id ? ['lots', id.toString()] : null, () => fetchData(id.toString()))
+  const { data, error, isLoading } = useSWR(id ? ['lots', id.toString()] : null, () => fetchData(id.toString()))
   const CATEGORIES = {
     id: 'category',
     name: 'Category',
-    options: Array.from(new Set(lots?.map((lot) => JSON.stringify({ value: lot.category.id, label: lot.category.name }))))
+    options: Array.from(new Set(data?.map((lot) => JSON.stringify({ value: lot.category.id, label: lot.category.name }))))
       .map((str) => JSON.parse(str))
       .map((category) => ({ ...category, checked: false })),
   } as const
 
+  const CITY_FILTERS  = {
+    id: 'city',
+    name: 'City',
+    options: Array.from(new Set(data?.map((lot) => JSON.stringify({ value: lot.auction.location.id, label: lot.auction.location.city }))))
+      .map((str) => JSON.parse(str))
+      .map((city) => ({ ...city, checked: false })),
+  }
+
+  const SORT_OPTIONS = [
+    { name: "None", value: "none" },
+    { name: "Price: Low to High", value: "price-asc" },
+    { name: "Price: High to Low", value: "price-desc" },
+  ] as const;
+  
+  
+  const PRICE_FILTERS = {
+    id: "price",
+    name: "Price",
+   options: [
+    {value: [0,100], label: "Any price"},
+    {value: [0,20], label: "Under $20"},
+    {value: [0,40], label: "$20 - $40"},
+    //custom option defined in JSX
+   ]
+  } as const;
+
   const [filter , setFilter] = useState <ProductState>({
-    category: [],
-    status: "open",
-    city: "New York",
+    category: CATEGORIES.options.map((option) => option.value),
+    city: CITY_FILTERS.options.map((option) => option.value),
     sort: "none",
     price: {isCustom: false, range: [0, 100]},
   });
 
-  const {data: products, isLoading, refetch} = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => {
-      const {data} = await axios.post(
-        'http://localhost:3000/api/products',
-        // {
-        //   filter: {
-        //     sort: filter.sort,
-        //     color: filter.color,
-        //     size: filter.size,
-        //     price: filter.price.range,
-        //   },
-        // }
-      );
-      return data;
-    },
-  });
-
-  const onSubmit = () => refetch()
-
-  const debouncedOnSubmit = debounce(onSubmit, 400);
-  const _debouncedOnSubmit = useCallback(debouncedOnSubmit, []);
 
   const applyArrayFilter = ({ category, value }: { category: keyof Omit<typeof filter, "price" | "sort">, value: string }) => {
     const isFilterApplied = filter[category].includes(value as never)
@@ -125,19 +94,29 @@ export default function Page() {
     } else {
       setFilter((prev) => ({ ...prev, [category]: [...prev[category], value] }));
     }
-    _debouncedOnSubmit();
   };
 
   const minPrice = Math.min(filter.price.range[0], filter.price.range[1]);
   const maxPrice = Math.max(filter.price.range[0], filter.price.range[1]);
 
-  console.log(CATEGORIES)
+  const filteredData = useMemo(() => {
+  let filtered = data
+
+    //filter by category 
+    if (filter.category.length > 0) {
+      filtered = filtered?.filter((lot) => filter.category.includes(lot.category.id))
+    }
+
+
+    return filtered
+
+  }, [data, filter])
 
   return (
     <main>
-      <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
+      <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-10">
         <h1 className="text-4xl font-bold tracking-tight">
-          Product Filter
+         {data?.[0].auction?.name}
         </h1>
         <div className="flex items-center">
           <DropdownMenu>
@@ -180,31 +159,6 @@ export default function Page() {
               ))}
             </ul>
           <Accordion type="multiple" className="animate-none">
-            {/* status filter */}
-            <AccordionItem value="status" >
-              <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
-                Status
-              </AccordionTrigger>
-              <AccordionContent className="pt-6 animate-none">
-                <ul className="space-y-4">
-                  {STATUS_FILTERS.options.map((option, idx) => (
-                    <li key={option.value} className="flex items-center">
-                      <input type="checkbox" id={`status-${idx}`}
-                      onChange={() => {
-                        applyArrayFilter({ category: "status", value: option.value });
-                      }}
-                      checked={filter.status === option.value}
-                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      <label htmlFor={`status-${idx}`} className="ml-3 text-sm text-gray-600">
-                        {option.label}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-
                         {/* category filter */}
                         <AccordionItem value="category" >
               <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
@@ -221,7 +175,32 @@ export default function Page() {
                       checked={filter.category.includes(option.value)}
                       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
-                      <label htmlFor={`color-${idx}`} className="ml-3 text-sm text-gray-600">
+                      <label htmlFor={`category-${idx}`} className="ml-3 text-sm text-gray-600">
+                        {option.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* city filter */}
+            <AccordionItem value="category" >
+              <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
+                City
+              </AccordionTrigger>
+              <AccordionContent className="pt-6 animate-none">
+                <ul className="space-y-4">
+                  {CITY_FILTERS.options.map((option, idx) => (
+                    <li key={option.value} className="flex items-center">
+                      <input type="checkbox" id={`city-${idx}`}
+                      onChange={() => {
+                        applyArrayFilter({ category: "city", value: option.value });
+                      }}
+                      checked={filter.city.includes(option.value)}
+                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <label htmlFor={`city-${idx}`} className="ml-3 text-sm text-gray-600">
                         {option.label}
                       </label>
                     </li>
@@ -242,7 +221,6 @@ export default function Page() {
                       <input type="radio" id={`price-${idx}`}
                       onChange={() => {
                         setFilter((prev) => ({...prev, price: {isCustom: false, range: [...option.value]}}));
-                        _debouncedOnSubmit();
                       }}
                       checked={
                         !filter.price.isCustom &&
@@ -261,7 +239,6 @@ export default function Page() {
                    <input type="radio" id={`price-${PRICE_FILTERS.options.length}`}
                     onChange={() => {
                       setFilter((prev) => ({...prev, price: {isCustom: true, range: DEFAULT_CUSTOM_PRICE_RANGE}}));
-                      _debouncedOnSubmit();
                     }}
                     checked={filter.price.isCustom}
                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
@@ -289,7 +266,6 @@ export default function Page() {
       onValueChange={(range) => {
         const [newMin, newMax] = range;
         setFilter((prev) => ({...prev, price: {isCustom: true, range: [newMin, newMax]}}));
-        _debouncedOnSubmit();
       }}
       disabled={!filter.price.isCustom}
     />
@@ -301,21 +277,18 @@ export default function Page() {
           </div>
 
           {/* Prodsucdt grid */}
-          <ul className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 ">
-            {
-              products?.map((product: any) => 
-              <pre key={product.id}>
-                {JSON.stringify(product)}
-              </pre>  )
-            }
-            {/* {products && products.length === 0 ? (
-              <EmptyState /> 
-            )  : products ? (
-              products?.map((product) => <Product key={product.id} product={product.metadata!} /> )
+          <ul className="lg:col-span-3 grid grid-cols-1 gap-8 ">
+          <main className="flex flex-row gap-2 mt-2">
+          <section className="flex-grow">
+            {filteredData && filteredData.length === 0 ? (
+              <LotEmptyState /> 
+            )  : filteredData ? (
+              filteredData?.map((lot) => <LotCard key={lot.id} lot={lot} /> )
             )  : (
-              new Array(12).fill(null).map((_, idx) => <ProductSkeleton key={idx} />)
+              new Array(12).fill(null).map((_, idx) => <LotSkeleton key={idx} />)
              )}
-           */}
+           </section>
+           </main>
           </ul>
         </div>
       </section>

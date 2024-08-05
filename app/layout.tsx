@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fontSans.className} scroll-smooth`} suppressHydrationWarning>
       <body className={fontSans.className}>
-      <Providers>{children}</Providers>
+     {children}
       </body>
     </html>
   );

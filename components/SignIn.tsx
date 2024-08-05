@@ -1,13 +1,13 @@
-import { signIn } from "@/auth"
+
 import { Button } from "./ui/button"
+import { handleSignIn } from "@/actions/auth"
 
 
 export function SignIn() {
   return (
     <form
-      action={async () => {
-        "use server"
-        await signIn("google")
+      action={() => {
+        handleSignIn("google")
       }}
     >
     <Button variant='link'>Sign In</Button>

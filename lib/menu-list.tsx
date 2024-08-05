@@ -29,41 +29,6 @@ type SuperSubMenu = {
             submenus: [
               
             ]
-          },{
-            href: "/school",
-            label: "School",
-            active: pathname  === "/school",
-            submenus: [
-              {
-                href: "/school/school-of-engineering",
-                label: "School of Engineering",
-                active: pathname  === "/school/school-of-engineering",
-              }
-            ]
-          },
-          {
-            href: "/projects",
-            label: "Projects",
-            active: pathname  === "/projects",
-            submenus: []
-          },
-          {
-            href: "/gallery",
-            label: "Gallery",
-            active: pathname  === "/gallery",
-            submenus: []
-          },
-          {
-            href: "/about",
-            label: "About",
-            active: pathname  === "/about",
-            submenus: []
-          },
-          {
-            href: "/contact",
-            label: "Contact",
-            active: pathname  === "/contact",
-            submenus: []
-          },
+          }
     ];
   }

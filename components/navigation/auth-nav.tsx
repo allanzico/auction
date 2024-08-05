@@ -1,10 +1,18 @@
+'use client'
+
 import React from 'react'
 import { auth } from "@/auth"
 import { SignOut } from '../SignOut'
 import { SignIn } from '../SignIn'
+import { getSession } from '@/actions/auth'
+import useSWR from 'swr'
 
-const AuthNav = async () => {
-    const session = await auth()
+const fetchData = async () => {
+  return await getSession()
+}
+
+const AuthNav = () => {
+    const { data: session } = useSWR(fetchData)
 
   return (
         session ? (
