@@ -8,9 +8,9 @@ const LotEmptyState = () => {
         <h3 className='font-semibold text-xl'>
           No lots found
         </h3>
-        <p className='text-zinc-500 text-sm'>
+        {/* <p className='text-zinc-500 text-sm'>
           Try changing the filters.
-        </p>
+        </p> */}
     </div>
   )
 }

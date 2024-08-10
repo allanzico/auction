@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react'
 import {useInView} from 'react-intersection-observer'
-import { displayAllAuctions } from '@/lib/actions/auction'
 import { LoadingSpinner } from './LoadingSpinner'
+import { displayAllAuctions } from '@/actions/auction'
 
 let page = 2
 const LoadMore = () => {

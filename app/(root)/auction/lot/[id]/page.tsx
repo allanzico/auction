@@ -1,11 +1,11 @@
 'use client'
 
 import { Gallery } from '@/components/gallery'
-import { LotDescription } from '@/components/lot-description'
 import { getLot, getLotBids } from '@/actions/auction'
 import { useParams } from 'next/navigation'
 import React,{ Suspense } from 'react'
 import useSWR from 'swr'
+import { LotBid } from '@/components/lot/lot-bid'
 
 const fetchData = async (lotId: string) => {
   return await getLot(lotId)
@@ -33,13 +33,23 @@ const Page = () => {
     },
   ]
 
+
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-   
-   <>
-      <div className="mx-auto max-w-screen-2xl px-4">
-        <div className="flex flex-col rounded-lg border border-neutral-200 bg-white p-8 md:p-12 lg:flex-row lg:gap-8 dark:border-neutral-800 dark:bg-black">
-          <div className="h-full w-full basis-full lg:basis-4/6">
+    <main >
+      <div className='flex flex-col gap-2 mt-2'>
+          <h1 className="mt-2 text-4xl font-semibold">{data?.name}</h1>
+          <div className='flex flex-row gap-2 flex-wrap'>
+          <p className="text-md text-zinc-400 font-normal ">
+            {data?.auction?.name}
+            </p>
+            <p className="text-md text-zinc-400 font-normal"> {data?.auction?.location?.city}</p>
+          </div>
+
+          </div>
+  <div className="flex flex-col bg-white  lg:flex-row lg:gap-8 ">
+          <div className="flex flex-col gap-4 md:gap-8 py-4 h-full w-full basis-full lg:basis-4/6">
+          
+          
             <Suspense
               fallback={
                 <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden" />
@@ -52,14 +62,16 @@ const Page = () => {
                 }))}
               />
             </Suspense>
+            <div>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+            </div>
           </div>
 
-          <div className="basis-full lg:basis-2/6">
-            <LotDescription lot={data} />
+          <div className="py-4 basis-full lg:basis-2/6">
+            <LotBid lot={data} />
           </div>
         </div>
-      </div>
-    </>
+
       </main>
   )
 }

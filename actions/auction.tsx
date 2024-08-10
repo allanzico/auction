@@ -118,8 +118,8 @@ export const getAllLots = async () => {
   )
 }
 
-export const getLotsInAuction = async (auctionId: string) => {
-  return await prisma.lot.findMany({
+export const getLotsInAuction = async (auctionId: string, pageIndex: number, perPage: number) => {
+  const [data, count] = await prisma.lot.findManyAndCount({
     where: {
       auctionId: auctionId,
     },
@@ -131,7 +131,12 @@ export const getLotsInAuction = async (auctionId: string) => {
         },
       },
     },
+    skip: pageIndex * perPage,
+    take: perPage,
+    orderBy: { createdAt: "desc" },
+
   })
+  return {data, count}
 }
 
 export const displayAllAuctions = async (page: number) => {
@@ -182,9 +187,21 @@ export const getLot = async (id: string) => {
       id: id,
     },
     include: {
-      auction: true,
+      auction:  {
+        include: {
+          location: true,
+        },
+      },
       category: true,
-      bids : true,
+      bids : {
+        include: {
+          user: {
+            select: {
+              name: true,
+            }
+          },
+        },
+      },
     },
   })
 }
@@ -227,30 +244,34 @@ export const getLotBids = async (lotId: string) => {
 export const addBid = async (lotId: string, amount: number) => {
   const  session = await auth()
 
+ try {
   if (!session) {
-      throw new Error("Unauthorized")
-  }
+    throw new Error("Unauthorized")
+}
 
-  const user = session.user
-  if(!user || !user.id) {
-      throw new Error("Unauthorized")
-  }
+const user = session.user
+if(!user || !user.id) {
+    throw new Error("Unauthorized")
+}
 
-  await prisma.bid.create({
-    data: {
-      amount: amount,
-      lot: {
-        connect: {
-          id: lotId,
-        },
-      },
-      user: {
-        connect: {
-          id: user.id,
-        },
+await prisma.bid.create({
+  data: {
+    amount: amount,
+    lot: {
+      connect: {
+        id: lotId,
       },
     },
-  })
-  revalidatePath(`/lot/${lotId}`)
+    user: {
+      connect: {
+        id: user.id,
+      },
+    },
+  },
+})
+revalidatePath(`/lot/${lotId}`)
+ } catch (error) {
+  console.error(error)
+ }
 }
 

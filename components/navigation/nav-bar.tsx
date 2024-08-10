@@ -15,8 +15,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
-import AuthNav from './auth-nav'
 import { BirdIcon } from 'lucide-react'
+import AuthNav from './auth-nav'
 
 const NavBar = ({locale}: {locale: string}) => {
 
@@ -24,9 +24,12 @@ const NavBar = ({locale}: {locale: string}) => {
       <header className="bg-white">
         <nav aria-label="Global" className="mx-auto flex w-full items-center justify-between py-4 md:py-16 px-6 lg:px-8">
           <div className="flex lg:flex-1">
-            <Link href="/">
-              <BirdIcon className="h-8 w-8" />
-            </Link>
+          <Link href="/">
+                    <div className="flex justify-center items-center gap-2">
+                        <h1 className="text-3xl font-bold">The Auction</h1>
+                        <BirdIcon className="h-8 w-8" />
+                    </div>
+                </Link>
           </div>
           <div className="flex lg:hidden">
             <Sheet >
@@ -45,21 +48,7 @@ const NavBar = ({locale}: {locale: string}) => {
           <NavMenu />
           </div>
         
-          <div className="hidden lg:gap-2 lg:items-center lg:flex lg:flex-1 lg:justify-end">
-            <Button variant="ghost">
-              <Link href="/register">
-              Create Account
-              </Link>
-            </Button>
-            <Button className="text-sm font-semibold leading-6 text-white">
-              <Link href="/login">
-              Login
-              </Link>
-            </Button>
-            {/* <Button  className="text-sm font-semibold leading-6 text-white">
-              DONATE
-            </Button> */}
-          </div>
+      <AuthNav />
         </nav>
       </header>
     )

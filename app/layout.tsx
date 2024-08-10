@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Montserrat as FontSans } from "next/font/google"
 import "./globals.css";
-
+import ToasterComponent from "@/components/toaster-component";
 import { cn } from "@/lib/utils"
 import NavBar from "@/components/navigation/nav-bar";
 import Providers from "@/components/providers";
+
  
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fontSans.className} scroll-smooth`} suppressHydrationWarning>
       <body className={fontSans.className}>
+      <ToasterComponent />
      {children}
       </body>
     </html>

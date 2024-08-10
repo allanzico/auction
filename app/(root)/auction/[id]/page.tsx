@@ -34,21 +34,25 @@ import { ProductState } from "@/lib/validators/product-validators";
 import LotEmptyState from "@/components/lot/empty-state";
 import LotCard from "@/components/lot/lot-card";
 import LotSkeleton from "@/components/lot/lot-skeleton";
+import PaginationComponent from "@/components/pagination-component";
 // import EmptyState from "@/components/products/empty-state";
 
 const DEFAULT_CUSTOM_PRICE_RANGE = [0, 100] as [number, number];
 
-const fetchData = async (auctionId: string) => {
-  return await getLotsInAuction(auctionId)
+const fetchData = async (auctionId: string, pageIndex: number, perPage: number) => {
+  return await getLotsInAuction(auctionId,pageIndex,perPage)
 }
 
 export default function Page() {
+  const [pageIndex, setPageIndex] = useState(0);
+  const perPage = 5
   const { id } = useParams()
-  const { data, error, isLoading } = useSWR(id ? ['lots', id.toString()] : null, () => fetchData(id.toString()))
+  const { data, error, isLoading } = useSWR(id ? [`/auction/[id]?page=${pageIndex + 1}&perPage=${perPage}`, id.toString()] : null, () => fetchData(id.toString(), pageIndex, perPage))
+  
   const CATEGORIES = {
     id: 'category',
     name: 'Category',
-    options: Array.from(new Set(data?.map((lot) => JSON.stringify({ value: lot.category.id, label: lot.category.name }))))
+    options: Array.from(new Set(data?.data?.map((lot) => JSON.stringify({ value: lot.category.id, label: lot.category.name }))))
       .map((str) => JSON.parse(str))
       .map((category) => ({ ...category, checked: false })),
   } as const
@@ -56,7 +60,7 @@ export default function Page() {
   const CITY_FILTERS  = {
     id: 'city',
     name: 'City',
-    options: Array.from(new Set(data?.map((lot) => JSON.stringify({ value: lot.auction.location.id, label: lot.auction.location.city }))))
+    options: Array.from(new Set(data?.data?.map((lot) => JSON.stringify({ value: lot.auction.location.id, label: lot.auction.location.city }))))
       .map((str) => JSON.parse(str))
       .map((city) => ({ ...city, checked: false })),
   }
@@ -100,7 +104,7 @@ export default function Page() {
   const maxPrice = Math.max(filter.price.range[0], filter.price.range[1]);
 
   const filteredData = useMemo(() => {
-  let filtered = data
+  let filtered = data?.data
 
     //filter by category 
     if (filter.category.length > 0) {
@@ -116,7 +120,7 @@ export default function Page() {
     <main>
       <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-10">
         <h1 className="text-4xl font-bold tracking-tight">
-         {data?.[0].auction?.name}
+         {data?.data?.[0]?.auction?.name}
         </h1>
         <div className="flex items-center">
           <DropdownMenu>
@@ -278,7 +282,7 @@ export default function Page() {
 
           {/* Prodsucdt grid */}
           <ul className="lg:col-span-3 grid grid-cols-1 gap-8 ">
-          <main className="flex flex-row gap-2 mt-2">
+          <main className="flex flex-row gap-2 mt-2" >
           <section className="flex-grow">
             {filteredData && filteredData.length === 0 ? (
               <LotEmptyState /> 
@@ -289,6 +293,9 @@ export default function Page() {
              )}
            </section>
            </main>
+           <div>
+             <PaginationComponent pageIndex={pageIndex} setPageIndex={setPageIndex} perPage={perPage} count={data?.count} />
+  </div>
           </ul>
         </div>
       </section>

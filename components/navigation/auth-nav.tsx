@@ -1,33 +1,50 @@
 'use client'
 
+import { getUser, logout } from '@/actions/auth'
 import React from 'react'
-import { auth } from "@/auth"
-import { SignOut } from '../SignOut'
-import { SignIn } from '../SignIn'
-import { getSession } from '@/actions/auth'
+import { Button } from '../ui/button'
+import Link from 'next/link'
 import useSWR from 'swr'
 
-const fetchData = async () => {
-  return await getSession()
-}
 
+const getUserData = async () => {
+  return await getUser()
+}
 const AuthNav = () => {
-    const { data: session } = useSWR(fetchData)
+  const { data: user, error, isLoading, mutate } = useSWR('user', () => getUserData())
+  mutate(
+    () => getUserData(),
+    false
+  )
 
   return (
-        session ? (
-          <div
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-          >
-            <SignOut />
+    <>
+      {
+        user ?
+          <div className="hidden lg:gap-2 lg:items-center lg:flex lg:flex-1 lg:justify-end">
+            <p> {user?.email}</p>
+            <Button variant="secondary" onClick={() => logout()}>
+              Logout
+            </Button>
           </div>
-        ) : (
-          <div
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-          >
-            <SignIn />
-          </div>
-        )
+          : isLoading ? <div className="hidden lg:gap-2 lg:items-center lg:flex lg:flex-1 lg:justify-end"></div>
+
+            : <div className="hidden lg:gap-2 lg:items-center lg:flex lg:flex-1 lg:justify-end">
+              <Button variant="ghost">
+                <Link href="/auth/signup">
+                  Create Account
+                </Link>
+              </Button>
+              <Button className="text-sm font-semibold leading-6 text-white">
+                <Link href="/auth/login">
+                  Login
+                </Link>
+              </Button>
+            </div>
+
+      }
+    </>
+
   )
 }
 
