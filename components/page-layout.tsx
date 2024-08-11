@@ -9,11 +9,9 @@ type Props = {
 export default function PageLayout({children}: Props) {
 
   return (
-    <div>
-       <NavBar locale="en" />
-      <div className="container relative flex grow flex-col px-4">
+      <div className="container relative flex grow flex-col">
+      <NavBar locale="en" />
       {children}
       </div>
-    </div>
   );
 }

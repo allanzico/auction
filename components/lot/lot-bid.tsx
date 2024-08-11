@@ -110,6 +110,7 @@ export function LotBid({ lot }: LotBidProps) {
             return (
               <div
                 className="flex flex-row justify-between items-start w-full py-2 border-b"
+                key={index}
               >
                 <p className='text-sm font-semibold'>{currencyFormatter(bid.amount)}</p>
                 <p className='text-xs'>

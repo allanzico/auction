@@ -8,7 +8,7 @@ import { displayAllAuctions } from '@/actions/auction'
 let page = 2
 const LoadMore = () => {
     const {ref, inView } = useInView() 
-    const [data, setData] = useState <JSX.Element[]>([])
+    const [data, setData] = useState <any>([])
 
     useEffect(() => {
         if (inView) {

@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import React,{ Suspense } from 'react'
 import useSWR from 'swr'
 import { LotBid } from '@/components/lot/lot-bid'
+import { Separator } from '@/components/ui/separator'
 
 const fetchData = async (lotId: string) => {
   return await getLot(lotId)
@@ -36,6 +37,10 @@ const Page = () => {
 
   return (
     <main >
+      <div className='mt-4 md:mt-8'>
+      <Separator />
+      </div>
+    
       <div className='flex flex-col gap-2 mt-2'>
           <h1 className="mt-2 text-4xl font-semibold">{data?.name}</h1>
           <div className='flex flex-row gap-2 flex-wrap'>

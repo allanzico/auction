@@ -1,8 +1,6 @@
 import { AuctionSchema, LotCategorySchema, LotSchema } from "@/lib/schemas";
 import { z } from "zod";
 import prisma from "./database";
-import { getUser } from "@/actions/auth";
-import { getLotCategories } from "@/actions/auction";
 
 const getRandomPrice = () => {
     const PRICES = [9.99, 19.99, 29.99, 39.99, 49.99]
