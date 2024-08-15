@@ -22,7 +22,7 @@ const NavBar = ({locale}: {locale: string}) => {
 
     return (
       <header className="bg-white">
-        <nav aria-label="Global" className="mx-auto flex w-full items-center justify-between py-4 md:py-16">
+        <nav aria-label="Global" className="mx-auto flex w-full items-center justify-between py-4 md:py-8 border-b border-gray-200">
           <div className="flex lg:flex-1">
           <Link href="/">
                     <div className="flex justify-center items-center gap-2">

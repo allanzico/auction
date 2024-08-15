@@ -6,8 +6,6 @@ import { z } from "zod"
 import { Argon2id } from "oslo/password"
 import { lucia } from "@/lib/lucia"
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
-import { revalidatePath } from "next/cache"
 
 export const signup = async (values: z.infer<typeof SignUpSchema>) => {
     try {
@@ -90,7 +88,7 @@ const dbUser = await prisma.user.findUnique({
         name: true,
     }
 })
-return dbUser
+return {user: dbUser, session}
 
 }
 

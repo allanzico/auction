@@ -1,7 +1,7 @@
 'use client'
 
 import { getUser, logout } from '@/actions/auth'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import useSWR from 'swr'
@@ -12,17 +12,20 @@ const getUserData = async () => {
 }
 const AuthNav = () => {
   const { data: user, error, isLoading, mutate } = useSWR('user', () => getUserData())
-  mutate(
-    () => getUserData(),
-    false
-  )
+
+  useEffect (() => {
+    mutate(
+      () => getUserData(),
+      false
+    )
+  }, [user])
 
   return (
     <>
       {
         user ?
           <div className="hidden lg:gap-2 lg:items-center lg:flex lg:flex-1 lg:justify-end">
-            <p> {user?.email}</p>
+            <p> {user?.user?.email}</p>
             <Button variant="secondary" onClick={() => logout()}>
               Logout
             </Button>

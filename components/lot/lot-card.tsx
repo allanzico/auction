@@ -46,16 +46,6 @@ const LotCard = ({lot}: LotCardProps) => {
             </span>
           </p>
           </div>
-          {/* <p className="text-sm text-gray-500 flex-grow">
-            <span className="hover:bg-gray-300 delay-100 duration-100 bg-gray-200 rounded-sm py-1 px-2 text-xs">
-              345 bids
-            </span>
-          </p>
-          <p className="text-sm text-gray-500 flex-grow">
-            <span className="hover:bg-gray-300 delay-100 duration-100 bg-gray-200 rounded-sm py-1 px-2 text-xs">
-              345 bids
-            </span>
-          </p> */}
         </div>
         <div className="flex justify-end items-end pt-5 gap-6">
           <p className="flex text-md items-center text-primary font-semibold">

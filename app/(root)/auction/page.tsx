@@ -3,7 +3,6 @@ import AuctionsList from "@/components/list";
 import CreateAuction from '@/components/auction/create';
 import { getLocations } from '@/actions/auction';
 
-
 const Page = async () => {
   const locations = await getLocations()
   return (

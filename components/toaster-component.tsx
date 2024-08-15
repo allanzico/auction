@@ -1,7 +1,8 @@
 
 'use client'
+
 import React, { useEffect, useState } from 'react'
-import { Toaster } from "./ui/toaster"
+import { Toaster, toast } from 'sonner'
 
 const ToasterComponent = () => {
     const [isClient, setIsClient] = useState(false)
@@ -9,6 +10,7 @@ const ToasterComponent = () => {
     useEffect(() => {
       setIsClient(true)
     }, [])
+    
   return isClient  && <Toaster />
 }
 

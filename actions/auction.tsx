@@ -1,12 +1,13 @@
 'use server'
 
-import { auth } from "@/auth";
 import prisma from "@/db/database";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getSignedUrlForS3Upload } from "../lib/s3";
 import { AuctionSchema, LocationSchema, LotCategorySchema, LotSchema } from "../lib/schemas";
 import AuctionCard from "@/components/auction/auction-card";
+import { getUser } from "./auth";
+import { AuctionFilterValidator, ProductState } from "@/lib/validators/product-validators";
 
 
 export const createUploadUrl = async (key: string, type: string) => {
@@ -14,13 +15,12 @@ export const createUploadUrl = async (key: string, type: string) => {
 }
 
 export const createAuction = async (data: z.infer<typeof AuctionSchema>) => {
-    const  session = await auth()
-
+  const dbUser = await getUser()
+  const user = dbUser && dbUser.user
+  let session = dbUser && dbUser.session
     if (!session) {
         throw new Error("Unauthorized")
     }
-
-    const user = session.user
     if(!user || !user.id) {
         throw new Error("Unauthorized")
     }
@@ -48,18 +48,18 @@ export const createAuction = async (data: z.infer<typeof AuctionSchema>) => {
 }
 
 export const getAllAuctions = async () => {
-  return await prisma.auction.findMany(
-    {include: {
+  const auctions = await prisma.auction.findMany({
+    include: {
       lots: true,
-      location: true,
-    }}
-  )
+    }
+  })
+  return auctions
 }
 
 export const getMyAuctions = async () => {
-  const  session = await auth()
-
-const user = session?.user
+  const dbUser = await getUser()
+  const user = dbUser && dbUser.user
+  let session = dbUser && dbUser.session
 if(!user || !user.id) {
     throw new Error("Unauthorized")
 }
@@ -71,17 +71,16 @@ if(!user || !user.id) {
       },
     }
   )
- 
 }
 
 export const createLot = async (data: z.infer<typeof LotSchema>) => {
-    const  session = await auth()
-
+  const dbUser = await getUser()
+const user = dbUser && dbUser.user
+let session = dbUser && dbUser.session
     if (!session) {
         throw new Error("Unauthorized")
     }
 
-    const user = session.user
     if(!user || !user.id) {
         throw new Error("Unauthorized")
     }
@@ -118,13 +117,18 @@ export const getAllLots = async () => {
   )
 }
 
-export const getLotsInAuction = async (auctionId: string, pageIndex: number, perPage: number) => {
+export const getLotsInAuction = async (auctionId: string, pageIndex: number, perPage: number, filter: ProductState) => {
+  console.log(filter)
   const [data, count] = await prisma.lot.findManyAndCount({
     where: {
       auctionId: auctionId,
+      categoryId: {
+        in: filter.category,
+      }
     },
     include: {
       category: true,
+      bids: true,
       auction: {
         include: {
           location: true,
@@ -133,7 +137,6 @@ export const getLotsInAuction = async (auctionId: string, pageIndex: number, per
     },
     skip: pageIndex * perPage,
     take: perPage,
-    orderBy: { createdAt: "desc" },
 
   })
   return {data, count}
@@ -158,13 +161,12 @@ export const displayAllAuctions = async (page: number) => {
 }
 
 export const createLotCategory = async (data: z.infer<typeof LotCategorySchema>) => {
-    const  session = await auth()
-
+  const dbUser = await getUser()
+  const user = dbUser && dbUser.user
+  let session = dbUser && dbUser.session
     if (!session) {
         throw new Error("Unauthorized")
     }
-
-    const user = session.user
     if(!user || !user.id) {
         throw new Error("Unauthorized")
     }
@@ -207,13 +209,14 @@ export const getLot = async (id: string) => {
 }
 
 export const createLocation = async (data: z.infer<typeof LocationSchema>) => {
-  const  session = await auth()
+  const dbUser = await getUser()
+const user = dbUser && dbUser.user
+let session = dbUser && dbUser.session
 
   if (!session) {
       throw new Error("Unauthorized")
   }
 
-  const user = session.user
   if(!user || !user.id) {
       throw new Error("Unauthorized")
   } 
@@ -242,14 +245,16 @@ export const getLotBids = async (lotId: string) => {
 }
 
 export const addBid = async (lotId: string, amount: number) => {
-  const  session = await auth()
+  const dbUser = await getUser()
+const user = dbUser && dbUser.user
+let session = dbUser && dbUser.session
+
 
  try {
   if (!session) {
     throw new Error("Unauthorized")
 }
 
-const user = session.user
 if(!user || !user.id) {
     throw new Error("Unauthorized")
 }
@@ -269,9 +274,47 @@ await prisma.bid.create({
     },
   },
 })
-revalidatePath(`/lot/${lotId}`)
+revalidatePath('/auction/lot/[id]' , 'page')
+return {success: true, message: "Bid placed successfully"}
  } catch (error) {
   console.error(error)
  }
 }
+
+export const getCategoriesInAuction = async (auctionId: string) => {
+  const lots = await prisma.lot.findMany({
+    where: {
+      auctionId,
+    },
+    include: {
+      category: true,
+    },
+  });
+
+  const categoryMap = new Map();
+  lots.forEach((lot: any) => {
+    const category = lot.category;
+    if (!categoryMap.has(category.id)) {
+      categoryMap.set(category.id, category);
+    }
+  });
+
+  const uniqueCategories = Array.from(categoryMap.values());
+  return uniqueCategories;
+};
+
+export const getLocationInAuction = async (auctionId: string) => {
+  const auction = await prisma.auction.findUnique({
+    where: {
+      id: auctionId,
+    },
+    include: {
+      location: true,
+    },
+  });
+ return auction?.location
+};
+
+
+
 

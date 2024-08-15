@@ -6,7 +6,7 @@ import React from 'react'
 
 const Page = async() => {
   const user = await getUser()
-  if(user) return redirect('/auction')
+  if(user) return redirect('/')
   return <Authcontainer>
 
   <LoginForm />

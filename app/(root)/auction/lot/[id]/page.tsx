@@ -3,7 +3,7 @@
 import { Gallery } from '@/components/gallery'
 import { getLot, getLotBids } from '@/actions/auction'
 import { useParams } from 'next/navigation'
-import React,{ Suspense } from 'react'
+import React,{ Suspense, useEffect } from 'react'
 import useSWR from 'swr'
 import { LotBid } from '@/components/lot/lot-bid'
 import { Separator } from '@/components/ui/separator'
@@ -13,7 +13,13 @@ const fetchData = async (lotId: string) => {
 }
 const Page = () => {
   const {id} = useParams()
-  const { data, error } = useSWR<any>(id ? ['lot', id.toString()] : null,  () => fetchData(id.toString()) )
+  const { data, error, isLoading, mutate } = useSWR<any>(id ? ['lot', id.toString()] : null,  () => fetchData(id.toString()) )
+useEffect(() => {
+  mutate(
+    () => fetchData(id.toString()),
+    false
+  )
+}, [data])
 
   const images =  [
     {
@@ -33,7 +39,6 @@ const Page = () => {
       altText: 'Olympus'
     },
   ]
-
 
   return (
     <main >

@@ -22,12 +22,15 @@ import {
     FormMessage,
   } from "@/components/ui/form"
 import { SignInSchema } from "@/lib/schemas"
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from "@/components/ui/use-toast"
 import { signin } from "@/actions/auth"
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+
   const { toast } = useToast()
     const form = useForm<z.infer<typeof SignInSchema>>({
         resolver: zodResolver(SignInSchema),
@@ -38,11 +41,11 @@ export function LoginForm() {
         },
       })
 
-    
   async function onSubmit(data: z.infer<typeof SignInSchema>) {
     const res = await signin(data)
     if (res.success) {
-      router.push('/auction')
+      const callbackUrl = searchParams.get('callbackUrl') || '/';
+      router.push(callbackUrl);
     } else {
       toast({
         title: "Error",

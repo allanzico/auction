@@ -48,7 +48,6 @@ export const BidSchema = z.object({
   amount: z.coerce.number().min(1, {
     message: "must be a number.",
   }),
-  lot: z.string(),
 })
 
 export const SignInSchema = z.object({
