@@ -89,6 +89,7 @@ let session = dbUser && dbUser.session
     data: {
       name: data.name,
       startingBid: data.startingBid,
+      highestBid: data.startingBid,
       file: data.file,
       auction: {
         connect: {
@@ -118,13 +119,17 @@ export const getAllLots = async () => {
 }
 
 export const getLotsInAuction = async (auctionId: string, pageIndex: number, perPage: number, filter: ProductState) => {
-  console.log(filter)
+
   const [data, count] = await prisma.lot.findManyAndCount({
     where: {
       auctionId: auctionId,
       categoryId: {
         in: filter.category,
-      }
+      },
+               highestBid: {
+            gte: filter.price.range[0],
+            lte: filter.price.range[1],
+          },
     },
     include: {
       category: true,
@@ -137,10 +142,16 @@ export const getLotsInAuction = async (auctionId: string, pageIndex: number, per
     },
     skip: pageIndex * perPage,
     take: perPage,
+    orderBy: {
+      bids: {
+        _count: filter.sort === "price-desc" ? "desc" : "asc",
+      },
+    },
+  });
 
-  })
-  return {data, count}
-}
+  return { data, count };
+};
+
 
 export const displayAllAuctions = async (page: number) => {
   try {
@@ -272,6 +283,16 @@ await prisma.bid.create({
         id: user.id,
       },
     },
+  },
+})
+
+//update lot highest bid
+await prisma.lot.update({
+  where: {
+    id: lotId,
+  },
+  data: {
+    highestBid: amount,
   },
 })
 revalidatePath('/auction/lot/[id]' , 'page')

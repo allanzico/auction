@@ -101,7 +101,9 @@ model Bid {
 model Lot {
   id          String      @id @default(cuid())
   name        String
-  startingBid Float
+  startingBid Float       @default(0)
+  highestBid  Float       @default(0)
+  reservePrice Float?
   file        String
   categoryId  String
   category    LotCategory @relation(fields: [categoryId], references: [id])

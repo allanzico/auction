@@ -1,41 +1,24 @@
 'use client'
 
-
-import { getCategoriesInAuction, getLocationInAuction, getLotsInAuction } from "@/actions/auction";
-// import Product from "@/components/products/product";
-// import ProductSkeleton from "@/components/products/product-skeleton";
+import { getCategoriesInAuction, getLotsInAuction } from "@/actions/auction";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import debounce from "lodash.debounce";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Slider } from "@/components/ui/slider";
-// import { TProduct } from "@/db";
 import { cn } from "@/lib/utils";
-// import { ProductState } from "@/lib/validators/product-validators";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { ChevronDown, Filter } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-import { AuctionFilterValidator, ProductState } from "@/lib/validators/product-validators";
+import { ProductState } from "@/lib/validators/product-validators";
 import LotEmptyState from "@/components/lot/empty-state";
 import LotCard from "@/components/lot/lot-card";
 import LotSkeleton from "@/components/lot/lot-skeleton";
 import PaginationComponent from "@/components/pagination-component";
-// import EmptyState from "@/components/products/empty-state";
+import { ChevronDown, Filter } from "lucide-react";
 
 const DEFAULT_CUSTOM_PRICE_RANGE = [0, 100] as [number, number];
 const SORT_OPTIONS = [
@@ -44,49 +27,67 @@ const SORT_OPTIONS = [
   { name: "Price: High to Low", value: "price-desc" },
 ] as const;
 
-
 const PRICE_FILTERS = {
   id: "price",
   name: "Price",
   options: [
-    { value: [0, 100], label: "Any price" },
+    { value: [0, 10000], label: "Any price" },
     { value: [0, 20], label: "Under $20" },
-    { value: [0, 40], label: "$20 - $40" },
-    //custom option defined in JSX
+    { value: [20, 40], label: "$20 - $40" },
   ]
 } as const;
 
 const fetchData = async (auctionId: string, pageIndex: number, perPage: number, filter: ProductState) => {
-  return await getLotsInAuction(auctionId, pageIndex, perPage, filter)
+  return await getLotsInAuction(auctionId, pageIndex, perPage, filter);
 }
 
 const fetchCategories = async (auctionId: string) => {
-  return await getCategoriesInAuction(auctionId)
+  return await getCategoriesInAuction(auctionId);
 }
 
 export default function Page() {
   const [pageIndex, setPageIndex] = useState(0);
-  const perPage = 5
-  const { id } = useParams()
-  const { data: categories, error: categoriesError, isLoading: isCategoriesLoading } = useSWR(id ? [`categories`, id.toString()] : null, () => fetchCategories(id.toString()))
-
-  const CATEGORIES = {
-    id: 'category',
-    name: 'Category',
-    options: categories?.map((category) => ({ label: category.name, value: category.id, checked: false })) || [],
-  } as const
-
+  const perPage = 50;
+  const { id } = useParams();
+  const { data: categories } = useSWR(id ? [`categories`, id.toString()] : null, () => fetchCategories(id.toString()));
+  const [initialized, setInitialized] = useState(false);
+  
+  const CATEGORIES = useMemo(
+    () => ({
+      id: 'category',
+      name: 'Category',
+      options: categories?.map((category) => ({ label: category.name, value: category.id, checked: false })) || [],
+    }),
+    [categories]
+  );
 
   const [filter, setFilter] = useState<ProductState>({
     category: CATEGORIES.options?.map((option) => option.value),
     sort: SORT_OPTIONS[0].value,
-    price: { isCustom: false, range: [0, 100] },
+    price: { isCustom: false, range: [0, 10000] },
   });
 
-  const { data, error, isLoading } = useSWR(id ? [`/auction/[id]?page=${pageIndex + 1}&perPage=${perPage}`, id.toString()] : null, () => fetchData(id.toString(), pageIndex, perPage, filter))
+  useEffect(() => {
+    if (!initialized && CATEGORIES.options.length > 0) {
+      setFilter((prev) => ({
+        ...prev,
+        category: CATEGORIES.options.map((option) => option.value),
+      }));
+      setInitialized(true); 
+    }
+  }, [CATEGORIES.options, initialized]);
+
+  const { data, isLoading: isDataLoading, mutate } = useSWR(id ? [`/auction/[id]?page=${pageIndex + 1}&perPage=${perPage}`, id.toString()] : null, () => fetchData(id.toString(), pageIndex, perPage, filter));
+
+  useEffect(() => {
+    if (initialized) {
+      mutate(() => fetchData(id.toString(), pageIndex, perPage, filter), false);
+    }
+  }, [filter, initialized]);
+
 
   const applyArrayFilter = ({ category, value }: { category: keyof Omit<typeof filter, "price" | "sort">, value: string }) => {
-    const isFilterApplied = filter[category].includes(value as never)
+    const isFilterApplied = filter[category].includes(value as never);
     if (isFilterApplied) {
       setFilter((prev) => ({ ...prev, [category]: prev[category].filter((v: any) => v !== value) }));
     } else {
@@ -97,12 +98,9 @@ export default function Page() {
   const minPrice = Math.min(filter.price.range[0], filter.price.range[1]);
   const maxPrice = Math.max(filter.price.range[0], filter.price.range[1]);
 
-  const filteredData = useMemo(() => {
-    let filtered = data?.data || []
-    return filtered
-  }, [data, filter])
+  const filteredData = useMemo(() => data?.data || [], [data, filter]);
 
-  console.log(filteredData)
+console.log(filteredData)
 
   return (
     <main>
@@ -138,10 +136,9 @@ export default function Page() {
       </div>
       <section className="pb-24 pt-6">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-          {/* filters */}
+          {/* Filters */}
           <div className="hidden lg:block">
             <Accordion type="multiple" className="animate-none">
-              {/* category filter */}
               <AccordionItem value="category" >
                 <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
                   Category
@@ -150,10 +147,10 @@ export default function Page() {
                   <ul className="space-y-4">
                     {CATEGORIES?.options?.map((option, idx) => (
                       <li key={option.value} className="flex items-center">
-                        <input type="checkbox" id={`category-${idx}`}
-                          onChange={() => {
-                            applyArrayFilter({ category: "category", value: option.value });
-                          }}
+                        <input
+                          type="checkbox"
+                          id={`category-${idx}`}
+                          onChange={() => applyArrayFilter({ category: "category", value: option.value })}
                           checked={filter.category?.includes(option.value)}
                           className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         />
@@ -175,10 +172,10 @@ export default function Page() {
                   <ul className="space-y-4">
                     {PRICE_FILTERS.options.map((option, idx) => (
                       <li key={option.label} className="flex items-center">
-                        <input type="radio" id={`price-${idx}`}
-                          onChange={() => {
-                            setFilter((prev) => ({ ...prev, price: { isCustom: false, range: [...option.value] } }));
-                          }}
+                        <input
+                          type="radio"
+                          id={`price-${idx}`}
+                          onChange={() => setFilter((prev) => ({ ...prev, price: { isCustom: false, range: [...option.value] } }))}
                           checked={
                             !filter.price.isCustom &&
                             filter.price.range[0] === option.value[0] &&
@@ -191,58 +188,56 @@ export default function Page() {
                         </label>
                       </li>
                     ))}
-                    <li className="flex justify-center flex-col gap-2">
-                      <div>
-                        <input type="radio" id={`price-${PRICE_FILTERS.options.length}`}
-                          onChange={() => {
-                            setFilter((prev) => ({ ...prev, price: { isCustom: true, range: DEFAULT_CUSTOM_PRICE_RANGE } }));
-                          }}
-                          checked={filter.price.isCustom}
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                        />
-                        <label htmlFor={`price-${PRICE_FILTERS.options.length}`} className="ml-3 text-sm text-gray-600">
-                          Custom
-                        </label>
-                      </div>
-                      <div className="flex justify-between">
-                        <p className="font-medium">Price </p>
-                        <div>
-                          ${filter.price.isCustom ? minPrice.toFixed(0) : filter.price.range[0].toFixed(0)} {' '} -
-                          ${filter.price.isCustom ? maxPrice.toFixed(0) : filter.price.range[1].toFixed(0)}
-                        </div>
-                      </div>
-                      <Slider
-                        className={cn({
-                          'opacity-50': !filter.price.isCustom,
-                        })}
-                        value={filter.price.isCustom ? filter.price.range : DEFAULT_CUSTOM_PRICE_RANGE}
-                        min={DEFAULT_CUSTOM_PRICE_RANGE[0]}
-                        max={DEFAULT_CUSTOM_PRICE_RANGE[1]}
-                        defaultValue={DEFAULT_CUSTOM_PRICE_RANGE}
-                        step={5}
-                        onValueChange={(range) => {
-                          const [newMin, newMax] = range;
-                          setFilter((prev) => ({ ...prev, price: { isCustom: true, range: [newMin, newMax] } }));
-                        }}
-                        disabled={!filter.price.isCustom}
+                    <li className="flex items-center">
+                      <input
+                        type="radio"
+                        id={`price-${PRICE_FILTERS.options.length}`}
+                        onChange={() => setFilter((prev) => ({ ...prev, price: { isCustom: true, range: DEFAULT_CUSTOM_PRICE_RANGE } }))}
+                        checked={filter.price.isCustom}
+                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
+                      <label htmlFor={`price-${PRICE_FILTERS.options.length}`} className="ml-3 text-sm text-gray-600">
+                        Custom
+                      </label>
                     </li>
+                    <div className="flex justify-between">
+                      <p className="font-medium">Price </p>
+                      <div>
+                        ${filter.price.isCustom ? minPrice.toFixed(0) : filter.price.range[0].toFixed(0)} {' '} -
+                        ${filter.price.isCustom ? maxPrice.toFixed(0) : filter.price.range[1].toFixed(0)}
+                      </div>
+                    </div>
+                    <Slider
+                      className={cn({
+                        'opacity-50': !filter.price.isCustom,
+                      })}
+                      value={filter.price.isCustom ? filter.price.range : DEFAULT_CUSTOM_PRICE_RANGE}
+                      min={DEFAULT_CUSTOM_PRICE_RANGE[0]}
+                      max={DEFAULT_CUSTOM_PRICE_RANGE[1]}
+                      defaultValue={DEFAULT_CUSTOM_PRICE_RANGE}
+                      step={5}
+                      onValueChange={(range) => {
+                        const [newMin, newMax] = range;
+                        setFilter((prev) => ({ ...prev, price: { isCustom: true, range: [newMin, newMax] } }));
+                      }}
+                      disabled={!filter.price.isCustom}
+                    />
                   </ul>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>
 
-          {/* Prodsucdt grid */}
+          {/* Product grid */}
           <ul className="lg:col-span-3 grid grid-cols-1 gap-8 ">
-            <main className="flex flex-row gap-2 mt-2" >
+            <main className="flex flex-row gap-2 mt-2">
               <section className="flex-grow">
-                {filteredData && filteredData.length === 0 ? (
-                  <LotEmptyState />
-                ) : filteredData ? (
-                  filteredData?.map((lot) => <LotCard key={lot.id} lot={lot} />)
-                ) : (
+                {isDataLoading ? (
                   new Array(12).fill(null).map((_, idx) => <LotSkeleton key={idx} />)
+                ) : Array.isArray(filteredData) && filteredData !== undefined && filteredData.length < 1 ? (
+                  <LotEmptyState />
+                ) : (
+                  Array.isArray(filteredData) && filteredData.length > 0 && filteredData.map((lot) => <LotCard key={lot.id} lot={lot} />)
                 )}
               </section>
             </main>

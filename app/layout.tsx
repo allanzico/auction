@@ -5,6 +5,7 @@ import ToasterComponent from "@/components/toaster-component";
 import { cn } from "@/lib/utils"
 import NavBar from "@/components/navigation/nav-bar";
 import Providers from "@/components/providers";
+import NavHeader from "@/components/navigation/nav-header";
 
  
 const fontSans = FontSans({
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fontSans.className} scroll-smooth`} suppressHydrationWarning>
       <body className={fontSans.className}>
+        <NavHeader />
       <ToasterComponent />
      {children}
       </body>
