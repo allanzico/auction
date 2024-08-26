@@ -25,7 +25,7 @@ const NavHeader = async () => {
                         </LogoutButton>
                         
                         { isAdmin ?
-                           <Link href='auth/logout' className={buttonVariants(
+                           <Link href='/dashboard' className={buttonVariants(
                             {
                                 size : 'sm',
                                 variant : 'ghost',
@@ -45,7 +45,7 @@ const NavHeader = async () => {
                         </Link>
                         </> ) : (
                             <>
-                            <Link href='auth/signup' className={buttonVariants(
+                            <Link href='/auth/signup' className={buttonVariants(
                                 {
                                     size : 'sm',
                                     variant : 'ghost',
@@ -53,7 +53,7 @@ const NavHeader = async () => {
                             )}>
                                 sign up
                             </Link>
-                            <Link href='auth/login' className={buttonVariants(
+                            <Link href='/auth/login' className={buttonVariants(
                                 {
                                     size : 'sm',
                                     variant : 'ghost',
@@ -61,7 +61,7 @@ const NavHeader = async () => {
                             )}>
                                 login
                             </Link>
-                            <div className='h-8 w-px bg-zinc-200 hidden sm:block' />
+                            {/* <div className='h-8 w-px bg-zinc-200 hidden sm:block' />
                             <Link href='/auction' className={buttonVariants(
                             {
                                 size : 'sm',
@@ -69,7 +69,7 @@ const NavHeader = async () => {
                             }
                         )}>
                             Auctions
-                        </Link>
+                        </Link> */}
                             </>
                         )
                     }

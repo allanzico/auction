@@ -29,6 +29,7 @@ import { signin } from "@/actions/auth"
 export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  console.log(searchParams)
 
 
   const { toast } = useToast()

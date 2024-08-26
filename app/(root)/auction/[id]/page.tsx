@@ -230,7 +230,7 @@ export default function Page() {
                 ) : Array.isArray(filteredData) && filteredData !== undefined && filteredData.length < 1 ? (
                   <LotEmptyState />
                 ) : (
-                  Array.isArray(filteredData) && filteredData.length > 0 && filteredData.map((lot) => <LotCard key={lot.id} lotId={lot.id} />)
+                  Array.isArray(filteredData) && filteredData.length > 0 && filteredData.map((lot) => <LotCard key={lot.id} lot={lot} />)
                 )}
               </section>
             </main>

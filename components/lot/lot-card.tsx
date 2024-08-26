@@ -12,23 +12,22 @@ import { toast } from 'sonner';
 import CountdownTimer from "../ui/countdown-timer";
 
 interface LotCardProps {
-  lotId: string;
+  lot: any;
 }
 
-const LotCard = ({ lotId }: LotCardProps) => {
- 
-  const { data: user, mutate: mutateUser } = useSWR('user', getUser);
-  const { data: lot, mutate: mutateLot } = useSWR(['lot', lotId], () => getLot(lotId));
+const LotCard = ({ lot }: LotCardProps) => {
   const imageUrl = lot && getImageUrl(lot.file);
-  const isLotFavorited = useMemo(() => user?.user?.favoriteLots?.some((favoriteLot: any) => favoriteLot.lotId === lotId), [user, lot]);
+  const { data: user, mutate: mutateUser } = useSWR('user', getUser);
+  const { data: freshLot, mutate: mutateFreshLot } = useSWR(['freshLot', lot.id], () => getLot(lot.id));
+  const isLotFavorited = useMemo(() => user?.user?.favoriteLots?.some((favoriteLot: any) => favoriteLot.lotId === lot.id), [user, lot]);
   const [isFavorited, setIsFavorited] = useState<boolean>(false);
   const [numberOfFavorites, setNumberOfFavorites] = useState<number>(0);
 
   useEffect(() => {
-    if (lot) {
-      setNumberOfFavorites(lot.favorited.length);  // Set initial number of favorites
+    if (freshLot) {
+      setNumberOfFavorites(freshLot.favorited.length);  // Set initial number of favorites
     }
-  }, [lot]);
+  }, [freshLot]);
 
   useEffect(() => {
     setIsFavorited(isLotFavorited!);
@@ -38,30 +37,34 @@ const LotCard = ({ lotId }: LotCardProps) => {
     e.preventDefault();
     e.stopPropagation();
 
+    if(!user) {
+      return toast.error('You must be logged in to favorite a lot')
+    }
+
     // Optimistically update the UI
     const newFavoriteState = !isFavorited;
     setIsFavorited(newFavoriteState);
     setNumberOfFavorites(prev => newFavoriteState ? prev + 1 : prev - 1);
 
     try {
-      const response = await favoriteLot(lotId);
+      const response = await favoriteLot(lot.id);
 
       if (response.success) {
         // Revalidate the user and fresh lot data to sync with the backend
         mutateUser();
-        mutateLot();
+        mutateFreshLot();
         toast.success(response.message);
       } else {
         // Revert the optimistic update if the backend operation failed
         setIsFavorited(isLotFavorited!);
-        setNumberOfFavorites(lot?.favorited.length!);
+        setNumberOfFavorites(freshLot?.favorited.length!);
         toast.error('Failed to update favorite');
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
       // Revert the optimistic update in case of an error
       setIsFavorited(isLotFavorited!);
-      setNumberOfFavorites(lot?.favorited.length!);
+      setNumberOfFavorites(freshLot?.favorited.length!);
       toast.error('Failed to update favorite');
     }
   };

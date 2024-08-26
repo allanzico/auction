@@ -10,6 +10,7 @@ import useSWR from 'swr'
 const getUserData = async () => {
   return await getUser()
 }
+
 const AuthNav = () => {
   const { data: user, error, isLoading, mutate } = useSWR('user', () => getUserData())
 

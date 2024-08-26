@@ -3,9 +3,9 @@ import { z } from "zod";
 import prisma from "./database";
 
 const getRandomPrice = () => {
-    const PRICES = [9.99, 19.99, 29.99, 39.99, 49.99]
+    const PRICES = [9.99, 19.99, 29.99, 39.99, 49.99, 59.99, 69.99, 79.99, 89.99, 99.99]
     return PRICES[Math.floor(Math.random() * PRICES.length)]
-  }
+}
 
   export const seed = async () => {
     const categories: z.infer<typeof LotCategorySchema>[] = []
@@ -23,19 +23,47 @@ const getRandomPrice = () => {
         "9b0affa1-7980-4da6-a206-be775713479c1717862618222"
     ]
 
-    for (let i = 0; i < Math.floor(Math.random() * 5) + 5; i++) {
-        for (let j = 0; j < images.length;  j++) { 
-            const imageId = images[j]
-            auctions.push({
-                name: Math.random().toString(36).substring(7),
-                file: imageId,
-                location: location,
-                startDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-                endDate: new Date(Date.now() + 1001 * 60 * 60 * 24 * 60),
-            })
-        }
-    }
+       // create random categories with a minimum 5 string name 
+       for (let i = 0; i < Math.floor(Math.random() * 5) + 5; i++) {
+        categories.push({
+          name: Math.random().toString(36).substring(7)
+        })
+      }
+  
+      //add categories to db
+      await Promise.all(categories.map(async (category) => {
+        await prisma.lotCategory.create({
+          data: {
+            name: category.name,
+          },
+        })
+      }))
 
+      // create auctions with random images and dates
+    for (let i = 0; i < Math.floor(Math.random() * 5) + 5; i++) {
+      for (let j = 0; j < images.length; j++) { 
+          const imageId = images[j];
+          
+          const startDateOffset = Math.floor(Math.random() * 10) + 1; // Start date between 1-10 days from now
+          const endDateOffset = startDateOffset + Math.floor(Math.random() * 30) + 5; // End date between 5-35 days after start
+  
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() + startDateOffset);
+  
+          const endDate = new Date();
+          endDate.setDate(startDate.getDate() + endDateOffset);
+  
+          auctions.push({
+              name: Math.random().toString(36).substring(7),
+              file: imageId,
+              location: location,
+              startDate: startDate,
+              endDate: endDate,
+          });
+      }
+  }
+
+  //save auctions to db
 await Promise.all(auctions.map(async (auction) => {
     await prisma.auction.create({
         data: {
@@ -66,6 +94,8 @@ const dbAuctions = await prisma.auction.findMany(
 
 const dbCategories = await prisma.lotCategory.findMany()
 
+
+//create lots for each auction
 for (let i = 0; i < dbAuctions.length; i++) {
     const auctionId = dbAuctions[i].id
     for (let j = 0; j < dbCategories.length; j++) {
@@ -83,6 +113,8 @@ for (let i = 0; i < dbAuctions.length; i++) {
     }
 }
 
+
+// save lots to db
 await Promise.all(lots.map(async (lot) => {
   await prisma.lot.create({
     data: {
@@ -102,23 +134,6 @@ await Promise.all(lots.map(async (lot) => {
 },
 })
 }))
-
-
-    //create random categories with a minimum 5 string name 
-    // for (let i = 0; i < Math.floor(Math.random() * 5) + 5; i++) {
-    //   categories.push({
-    //     name: Math.random().toString(36).substring(7)
-    //   })
-    // }
-
-    // await Promise.all(categories.map(async (category) => {
-    //   await prisma.lotCategory.create({
-    //     data: {
-    //       name: category.name,
-    //     },
-    //   })
-    // }))
-
   }
 
   seed()

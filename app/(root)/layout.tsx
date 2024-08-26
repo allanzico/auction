@@ -1,4 +1,5 @@
 import BreadcrumbComponent from "@/components/breadcrumb";
+import NavBar from "@/components/navigation/nav-bar";
 import PageLayout from "@/components/page-layout";
 
 

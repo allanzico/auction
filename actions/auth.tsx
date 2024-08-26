@@ -52,7 +52,7 @@ export const signin = async (values: z.infer<typeof SignInSchema>) => {
         return {success: false, error: 'Invalid credentials'}
     }
     const session = await lucia.createSession(user.id,{})
-    const sessionCookie = await lucia.createSessionCookie(session.id)
+    const sessionCookie =  lucia.createSessionCookie(session.id)
     cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes)
     return {success: true, message: 'You have successfully signed in.'}
 }
