@@ -22,6 +22,9 @@ export const LotSchema = z.object({
   startingBid: z.coerce.number().min(1, {
     message: "must be a number.",
   }),
+  highestBid: z.coerce.number().min(1, {
+    message: "must be a number.",
+  }),
   file: typeof window === 'undefined' ? z.any() : z.instanceof(FileList)
   .refine((file) => file?.length == 1, 'File is required.')
   .refine((file) => file?.[0].type.startsWith('image/'), 'File must be an image.'),
