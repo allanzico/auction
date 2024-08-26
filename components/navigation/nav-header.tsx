@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { buttonVariants } from '../ui/button'
 import { getUser } from '@/actions/auth'
 import LogoutButton from '@/components/auth/logout-button'
+import { UserRound } from 'lucide-react'
 
 const NavHeader = async () => {
     const user = await getUser()
@@ -22,7 +23,6 @@ const NavHeader = async () => {
                         <LogoutButton > 
                             Logout
                         </LogoutButton>
-                        <p> {user?.user?.email}</p>
                         
                         { isAdmin ?
                            <Link href='auth/logout' className={buttonVariants(
@@ -34,13 +34,14 @@ const NavHeader = async () => {
                             Dashboard
                         </Link> : null
                     }
-                    <Link href='/auction' className={buttonVariants(
+                    <Link href='/account' className={buttonVariants(
                             {
                                 size : 'sm',
-                                variant : 'ghost',
+                                variant : 'default',
                             }
                         )}>
-                            Auctions
+                            <UserRound className='mr-2 h-4 w-4' />
+                            Account
                         </Link>
                         </> ) : (
                             <>

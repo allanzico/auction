@@ -21,7 +21,7 @@ import { Lot } from '@/types';
 import { toast } from 'sonner';
 import { currencyFormatter } from '@/lib/utils';
 import { Separator } from '../ui/separator';
-import { addBid } from '@/actions/auction';
+import { addBid } from '@/actions/bid';
 import Link from 'next/link';
 import { getUser } from '@/actions/auth';
 import useSWR from 'swr';

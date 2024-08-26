@@ -2,7 +2,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { MotionDiv } from '../MotionDiv'
 import Link from 'next/link'
 import { getImageUrl } from '@/lib/utils'
 import CountdownTimer from '../ui/countdown-timer'
@@ -28,18 +27,7 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
     <Link 
     href={`/auction/${auction.id}`}
     >
-    <MotionDiv
-    variants={variants}
-    initial="hidden"
-    animate="visible"
-    transition={{ 
-      delay: index * 0.01,
-      ease: "easeInOut",
-      duration: 0.5
-     }}
-     viewport={{ amount: 0}}
-    >
-           <div className="group relative" >
+  <div className="group relative" >
            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-56">
                   <img
                     src={imageUrl}
@@ -64,9 +52,6 @@ const AuctionCard = ({auction, index}: AuctionCardProps) => {
                   </p>
                 </div>
            </div>
-                
-       
-    </MotionDiv>
     </Link>
   )
 }

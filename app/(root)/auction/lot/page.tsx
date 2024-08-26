@@ -1,6 +1,7 @@
 import CreateLot from '@/components/lot/create'
 import { Button } from '@/components/ui/button'
-import { createLocation, getLotCategories, getMyAuctions } from '@/actions/auction'
+import { createLocation, getMyAuctions } from '@/actions/auction'
+import { getLotCategories } from '@/actions/lot'
 import React from 'react'
 
 const Page = async () => {

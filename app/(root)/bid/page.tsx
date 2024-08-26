@@ -1,9 +1,9 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { createLocation, getLotCategories, getMyAuctions } from '@/actions/auction'
+import { createLocation,} from '@/actions/auction'
 import React from 'react'
-import { createLotCategory, getLocations } from '@/actions/auction'
+import { createLotCategory, } from '@/actions/lot'
 
 const Page = () => {
   const locations = [

@@ -73,86 +73,6 @@ if(!user || !user.id) {
   )
 }
 
-export const createLot = async (data: z.infer<typeof LotSchema>) => {
-  const dbUser = await getUser()
-const user = dbUser && dbUser.user
-let session = dbUser && dbUser.session
-    if (!session) {
-        throw new Error("Unauthorized")
-    }
-
-    if(!user || !user.id) {
-        throw new Error("Unauthorized")
-    }
-
-  await prisma.lot.create({
-    data: {
-      name: data.name,
-      startingBid: data.startingBid,
-      highestBid: data.startingBid,
-      file: data.file,
-      auction: {
-        connect: {
-          id: data.auction,
-        },
-      },
-      category: {
-        connect: {
-          id: data.category,
-        },
-      },
-    },
-  })
-  revalidatePath("/")
-}
-export const getAllLots = async () => {
-  return await prisma.lot.findMany(
-    {include: {
-      auction: {
-        include: {
-          location: true,
-        },
-      },
-      category: true,
-    }}
-  )
-}
-
-export const getLotsInAuction = async (auctionId: string, pageIndex: number, perPage: number, filter: ProductState) => {
-
-  const [data, count] = await prisma.lot.findManyAndCount({
-    where: {
-      auctionId: auctionId,
-      categoryId: {
-        in: filter.category,
-      },
-               highestBid: {
-            gte: filter.price.range[0],
-            lte: filter.price.range[1],
-          },
-    },
-    include: {
-      category: true,
-      bids: true,
-      auction: {
-        include: {
-          location: true,
-        },
-      },
-    },
-    skip: pageIndex * perPage,
-    take: perPage,
-    orderBy: {
-      bids: {
-        _count: filter.sort === "price-desc" ? "desc" : "asc",
-      },
-    },
-  });
-
-  return { data, count };
-};
-
-
 export const displayAllAuctions = async (page: number) => {
   try {
     const auctions = await prisma.auction.findMany({
@@ -169,54 +89,6 @@ export const displayAllAuctions = async (page: number) => {
  } catch (error) {
    console.error(error)
  }
-}
-
-export const createLotCategory = async (data: z.infer<typeof LotCategorySchema>) => {
-  const dbUser = await getUser()
-  const user = dbUser && dbUser.user
-  let session = dbUser && dbUser.session
-    if (!session) {
-        throw new Error("Unauthorized")
-    }
-    if(!user || !user.id) {
-        throw new Error("Unauthorized")
-    }
-
-  await prisma.lotCategory.create({
-    data: {
-      name: data.name,
-    },
-  })
-  revalidatePath("/")
-}
-
-export const getLotCategories = async () => {
-  return await prisma.lotCategory.findMany()
-}
-
-export const getLot = async (id: string) => {
-  return await prisma.lot.findUnique({
-    where: {
-      id: id,
-    },
-    include: {
-      auction:  {
-        include: {
-          location: true,
-        },
-      },
-      category: true,
-      bids : {
-        include: {
-          user: {
-            select: {
-              name: true,
-            }
-          },
-        },
-      },
-    },
-  })
 }
 
 export const createLocation = async (data: z.infer<typeof LocationSchema>) => {
@@ -242,64 +114,6 @@ let session = dbUser && dbUser.session
 
 export const getLocations = async () => {
   return await prisma.location.findMany()
-}
-
-export const getLotBids = async (lotId: string) => {
-  return await prisma.bid.findMany({
-    where: {
-      lotId: lotId,
-    },
-    include: {
-      user: true,
-    },
-  })
-}
-
-export const addBid = async (lotId: string, amount: number) => {
-  const dbUser = await getUser()
-const user = dbUser && dbUser.user
-let session = dbUser && dbUser.session
-
-
- try {
-  if (!session) {
-    throw new Error("Unauthorized")
-}
-
-if(!user || !user.id) {
-    throw new Error("Unauthorized")
-}
-
-await prisma.bid.create({
-  data: {
-    amount: amount,
-    lot: {
-      connect: {
-        id: lotId,
-      },
-    },
-    user: {
-      connect: {
-        id: user.id,
-      },
-    },
-  },
-})
-
-//update lot highest bid
-await prisma.lot.update({
-  where: {
-    id: lotId,
-  },
-  data: {
-    highestBid: amount,
-  },
-})
-revalidatePath('/auction/lot/[id]' , 'page')
-return {success: true, message: "Bid placed successfully"}
- } catch (error) {
-  console.error(error)
- }
 }
 
 export const getCategoriesInAuction = async (auctionId: string) => {

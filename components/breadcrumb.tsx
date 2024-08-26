@@ -23,7 +23,7 @@ const BreadcrumbComponent = () => {
     setIsClient(true)
   }, [])
 
-  return isClient &&     <Breadcrumb className="py-8">
+  return isClient &&  <Breadcrumb className="py-8">
   <BreadcrumbList>
   {!isHome && (
     <BreadcrumbItem>

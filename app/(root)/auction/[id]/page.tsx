@@ -1,6 +1,7 @@
 'use client'
 
-import { getCategoriesInAuction, getLotsInAuction } from "@/actions/auction";
+import { getCategoriesInAuction } from "@/actions/auction";
+import { getLotsInAuction } from "@/actions/lot";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import {
   DropdownMenu,
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
+import useSWRMutation from 'swr/mutation'
 import { ProductState } from "@/lib/validators/product-validators";
 import LotEmptyState from "@/components/lot/empty-state";
 import LotCard from "@/components/lot/lot-card";
@@ -37,19 +39,11 @@ const PRICE_FILTERS = {
   ]
 } as const;
 
-const fetchData = async (auctionId: string, pageIndex: number, perPage: number, filter: ProductState) => {
-  return await getLotsInAuction(auctionId, pageIndex, perPage, filter);
-}
-
-const fetchCategories = async (auctionId: string) => {
-  return await getCategoriesInAuction(auctionId);
-}
-
 export default function Page() {
   const [pageIndex, setPageIndex] = useState(0);
   const perPage = 50;
   const { id } = useParams();
-  const { data: categories } = useSWR(id ? [`categories`, id.toString()] : null, () => fetchCategories(id.toString()));
+  const { data: categories } = useSWR(id ? [`categories`, id.toString()] : null, async () => await getCategoriesInAuction(id.toString()));
   const [initialized, setInitialized] = useState(false);
   
   const CATEGORIES = useMemo(
@@ -77,14 +71,15 @@ export default function Page() {
     }
   }, [CATEGORIES.options, initialized]);
 
-  const { data, isLoading: isDataLoading, mutate } = useSWR(id ? [`/auction/[id]?page=${pageIndex + 1}&perPage=${perPage}`, id.toString()] : null, () => fetchData(id.toString(), pageIndex, perPage, filter));
+  const { data, isLoading: isDataLoading, mutate  } = useSWR(id ? [`/auction/[id]?page=${pageIndex + 1}&perPage=${perPage}`, id.toString()] : null, async () => await getLotsInAuction(id.toString(), pageIndex, perPage, filter));
 
+  const {trigger, isMutating } = useSWRMutation(id ? [`/auction/[id]?page=${pageIndex + 1}&perPage=${perPage}`, id.toString()] : null, async () => await getLotsInAuction(id.toString(), pageIndex, perPage, filter));
+  
   useEffect(() => {
     if (initialized) {
-      mutate(() => fetchData(id.toString(), pageIndex, perPage, filter), false);
+      trigger();
     }
   }, [filter, initialized]);
-
 
   const applyArrayFilter = ({ category, value }: { category: keyof Omit<typeof filter, "price" | "sort">, value: string }) => {
     const isFilterApplied = filter[category].includes(value as never);
@@ -99,8 +94,6 @@ export default function Page() {
   const maxPrice = Math.max(filter.price.range[0], filter.price.range[1]);
 
   const filteredData = useMemo(() => data?.data || [], [data, filter]);
-
-console.log(filteredData)
 
   return (
     <main>
@@ -137,8 +130,8 @@ console.log(filteredData)
       <section className="pb-24 pt-6">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
           {/* Filters */}
-          <div className="hidden lg:block">
-            <Accordion type="multiple" className="animate-none">
+          <div className="hidden lg:block lg:col-span-1">
+            <Accordion type="multiple" className=" animate-none">
               <AccordionItem value="category" >
                 <AccordionTrigger className="py-3 text-sm text-gray-400 hover:text-gray-500">
                   Category
@@ -229,21 +222,19 @@ console.log(filteredData)
           </div>
 
           {/* Product grid */}
-          <ul className="lg:col-span-3 grid grid-cols-1 gap-8 ">
+          <ul className="relative lg:col-span-3 grid grid-cols-1 gap-8 ">
             <main className="flex flex-row gap-2 mt-2">
               <section className="flex-grow">
-                {isDataLoading ? (
+                {isDataLoading || isMutating ? (
                   new Array(12).fill(null).map((_, idx) => <LotSkeleton key={idx} />)
                 ) : Array.isArray(filteredData) && filteredData !== undefined && filteredData.length < 1 ? (
                   <LotEmptyState />
                 ) : (
-                  Array.isArray(filteredData) && filteredData.length > 0 && filteredData.map((lot) => <LotCard key={lot.id} lot={lot} />)
+                  Array.isArray(filteredData) && filteredData.length > 0 && filteredData.map((lot) => <LotCard key={lot.id} lotId={lot.id} />)
                 )}
               </section>
             </main>
-            <div>
-              <PaginationComponent pageIndex={pageIndex} setPageIndex={setPageIndex} perPage={perPage} count={data?.count} />
-            </div>
+            <PaginationComponent pageIndex={pageIndex} setPageIndex={setPageIndex} perPage={perPage} count={data?.count} />
           </ul>
         </div>
       </section>

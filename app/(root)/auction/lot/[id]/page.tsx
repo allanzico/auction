@@ -1,7 +1,7 @@
 'use client'
 
 import { Gallery } from '@/components/gallery'
-import { getLot, getLotBids } from '@/actions/auction'
+import { getLot } from '@/actions/lot'
 import { useParams } from 'next/navigation'
 import React,{ Suspense, useEffect } from 'react'
 import useSWR from 'swr'
@@ -9,20 +9,15 @@ import { LotBid } from '@/components/lot/lot-bid'
 import { Separator } from '@/components/ui/separator'
 import BidSkeleton from '@/components/lot/bid-skeleton'
 
-const fetchData = async (lotId: string) => {
-  return await getLot(lotId)
-}
 const Page = () => {
   const {id} = useParams()
-  const { data, error, isLoading, mutate } = useSWR<any>(id ? ['lot', id.toString()] : null,  () => fetchData(id.toString()) )
+  const { data, error, isLoading, mutate } = useSWR<any>(id ? ['lot', id.toString()] : null,  async() => await getLot(id.toString()) )
 useEffect(() => {
   mutate(
-    () => fetchData(id.toString()),
+    async () => await getLot(id.toString()),
     false
   )
 }, [data])
-
-console.log(data)
 
   const images =  [
     {

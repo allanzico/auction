@@ -21,7 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import {createLot, createUploadUrl, getMyAuctions } from "@/actions/auction"
+import {createUploadUrl, getMyAuctions } from "@/actions/auction"
+import {createLot} from "@/actions/lot"
 import { v4 as uuidv4 } from 'uuid';
 import { LotSchema } from "@/lib/schemas"
 

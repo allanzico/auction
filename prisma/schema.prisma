@@ -25,6 +25,7 @@ model User {
   // accounts      Account[]
   sessions      Session[]
   // Authenticator Authenticator[]
+  favoriteLots  FavoriteLot[]
   auctions      Auction[]
   bids          Bid[]
   createdAt     DateTime        @default(now())
@@ -110,6 +111,7 @@ model Lot {
   auctionId   String
   auction     Auction     @relation(fields: [auctionId], references: [id])
   bids        Bid[]
+  favorited FavoriteLot[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -135,6 +137,16 @@ model Auction {
   lots       Lot[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model FavoriteLot {
+  id        String   @id @default(cuid())
+  userId    String
+  lotId     String
+  user      User     @relation(fields: [userId], references: [id])
+  lot       Lot      @relation(fields: [lotId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Location {

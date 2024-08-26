@@ -74,8 +74,8 @@ const PaginationComponent = ({
   }
 
   return (
-    <Pagination>
-      <PaginationContent>
+    <Pagination className='flex max-w-screen-lg justify-center items-center bottom-[5%] sticky z-[100] h-14 inset-x-0  w-full'>
+      <PaginationContent className='bg-white backdrop-blur-xl transition-all'>
         {/* Conditionally render the PaginationPrevious button */}
         {pageIndex > 0 && (
           <PaginationItem className='cursor-pointer' onClick={() => setPageIndex(pageIndex - 1)}>

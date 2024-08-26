@@ -86,6 +86,7 @@ const dbUser = await prisma.user.findUnique({
         email: true,
         role: true,
         name: true,
+        favoriteLots: true,
     }
 })
 return {user: dbUser, session}
