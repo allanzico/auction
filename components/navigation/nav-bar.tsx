@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/sheet"
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import { BirdIcon } from 'lucide-react'
-import AuthNav from './auth-nav'
 
 const NavBar = ({locale}: {locale: string}) => {
 
@@ -47,8 +46,6 @@ const NavBar = ({locale}: {locale: string}) => {
           <div className="hidden md:flex">
           <NavMenu />
           </div>
-        
-      <AuthNav />
         </nav>
       </header>
     )

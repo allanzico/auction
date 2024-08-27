@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import {
   Pagination,
@@ -25,6 +27,7 @@ const PaginationComponent = ({
 }: PaginationProps) => {
   const totalPages = Math.ceil(count! / perPage)
 
+ 
   // State to track the last page clicked before the ellipsis
   const [lastVisiblePage, setLastVisiblePage] = useState(3);
 

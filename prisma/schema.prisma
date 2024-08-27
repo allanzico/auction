@@ -114,6 +114,7 @@ model Lot {
   favorited FavoriteLot[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  @@index([highestBid])
 }
 
 model LotCategory {

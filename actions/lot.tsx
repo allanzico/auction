@@ -97,8 +97,8 @@ export const favoriteLot = async (lotId: string) => {
     )
   }
   
-  export const getLotsInAuction = async (auctionId: string, pageIndex: number, perPage: number, filter: ProductState) => {
-  
+  export const getLotsInAuction = async (auctionId: string, pageIndex: number, perPage: number, filter: ProductState ) => {
+
     const [data, count] = await prisma.lot.findManyAndCount({
       where: {
         auctionId: auctionId,
@@ -131,6 +131,8 @@ export const favoriteLot = async (lotId: string) => {
   
     return { data, count };
   };
+
+
   
   export const createLotCategory = async (data: z.infer<typeof LotCategorySchema>) => {
     const dbUser = await getUser()

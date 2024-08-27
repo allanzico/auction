@@ -29,7 +29,10 @@ export default function RootLayout({
       <body className={fontSans.className}>
         <NavHeader />
       <ToasterComponent />
-     {children}
+      <Providers>
+      {children}
+      </Providers>
+      
       </body>
     </html>
   );

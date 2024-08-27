@@ -1,5 +1,5 @@
 import {Prisma, PrismaClient } from '@prisma/client'
-
+import { withAccelerate } from '@prisma/extension-accelerate'
 
 
 const prismaClientSingleton = () => {
@@ -22,7 +22,7 @@ const prismaClientSingleton = () => {
         }
       }
     }
-  });
+  }).$extends(withAccelerate())
 }
 
 declare const globalThis: {

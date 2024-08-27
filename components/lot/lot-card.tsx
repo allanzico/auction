@@ -69,8 +69,6 @@ const LotCard = ({ lot }: LotCardProps) => {
     }
   };
 
-  console.log(lot)
-
   return (
     <div
       className="flex flex-row w-full py-4 px-2 border-b cursor-pointer hover:opacity-80 hover:shadow-lg transition duration-200 ease-out"
